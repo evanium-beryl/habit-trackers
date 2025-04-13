@@ -394,7 +394,7 @@ export default function HabitTracker() {
             >
               {isAddingHabit ? "Cancel" : "Add Habit"}
             </button>
-            {/* Reset Habits Button */}
+           
             {/* Reset Habits Button */}
             <button
               onClick={() => {
