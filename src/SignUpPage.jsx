@@ -70,79 +70,83 @@ export default function SignUpPage() {
 
         {/* Sign-up Form */}
         <form onSubmit={handleSignUp} className="w-full max-w-sm mx-auto">
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-semibold">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-2 mt-2 border rounded"
-              placeholder="Enter your username"
-              required
-              style={darkMode ? { color: "white" } : {}}
-            />
-          </div>
+  <div className="mb-4">
+    <label htmlFor="username" className="block text-sm font-semibold">
+      Username
+    </label>
+    <input
+      id="username"
+      type="text"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      className="w-full p-2 mt-2 border rounded"
+      placeholder="Enter your username"
+      required
+      autocomplete="username"  // Added this line
+      style={darkMode ? { color: "white" } : {}}
+    />
+  </div>
 
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-semibold">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 mt-2 border rounded"
-              placeholder="Enter your email"
-              required
-              style={darkMode ? { color: "white" } : {}}
-            />
-          </div>
+  <div className="mb-4">
+    <label htmlFor="email" className="block text-sm font-semibold">
+      Email
+    </label>
+    <input
+      id="email"
+      type="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      className="w-full p-2 mt-2 border rounded"
+      placeholder="Enter your email"
+      required
+      autocomplete="email"  // Added this line
+      style={darkMode ? { color: "white" } : {}}
+    />
+  </div>
 
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-semibold">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 mt-2 border rounded"
-              placeholder="Enter your password"
-              required
-              style={darkMode ? { color: "white" } : {}}
-            />
-          </div>
+  <div className="mb-4">
+    <label htmlFor="password" className="block text-sm font-semibold">
+      Password
+    </label>
+    <input
+      id="password"
+      type="password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      className="w-full p-2 mt-2 border rounded"
+      placeholder="Enter your password"
+      required
+      autocomplete="new-password"  // Added this line
+      style={darkMode ? { color: "white" } : {}}
+    />
+  </div>
 
-          <div className="mb-4">
-            <label htmlFor="confirmPassword" className="block text-sm font-semibold">
-              Re-enter Password
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-2 mt-2 border rounded"
-              placeholder="Re-enter your password"
-              required
-              style={darkMode ? { color: "white" } : {}}
-            />
-          </div>
+  <div className="mb-4">
+    <label htmlFor="confirmPassword" className="block text-sm font-semibold">
+      Re-enter Password
+    </label>
+    <input
+      id="confirmPassword"
+      type="password"
+      value={confirmPassword}
+      onChange={(e) => setConfirmPassword(e.target.value)}
+      className="w-full p-2 mt-2 border rounded"
+      placeholder="Re-enter your password"
+      required
+      autocomplete="new-password"  // Added this line
+      style={darkMode ? { color: "white" } : {}}
+    />
+  </div>
 
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
-            >
-              Sign Up
-            </button>
-          </div>
-        </form>
+  <div className="flex justify-center">
+    <button
+      type="submit"
+      className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+    >
+      Sign Up
+    </button>
+  </div>
+</form>
 
         {/* Redirect to Login Link */}
         <div className="text-center mt-4">
