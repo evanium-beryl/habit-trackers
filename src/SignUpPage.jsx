@@ -36,7 +36,8 @@ export default function SignUpPage() {
   const handleSignUp = (e) => {
     e.preventDefault(); // Prevent default form submission
 
-    if (!validateForm()) return; // If validation fails, don't proceed
+    // Validate form before submitting
+    if (!validateForm()) return;
 
     setIsSubmitting(true); // Start loading
     setErrorMessage(""); // Clear previous errors
@@ -56,37 +57,59 @@ export default function SignUpPage() {
 };
 
 const validateForm = () => {
+    // Reset all error messages and highlight for revalidation
+    setErrorMessage(""); 
+
+    // Validate username
     if (!username.trim()) {
-      setErrorMessage("Username is required.");
-      usernameRef.current.focus();
-      return false;
+        setErrorMessage("Username is required.");
+        usernameRef.current.focus();
+        return false;
     }
 
+    // Validate email format
     const emailPattern = /^[^\s@]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}$/;
-    if (!email.trim() || !emailPattern.test(email)) {
-      setErrorMessage("A valid email is required.");
-      emailRef.current.focus();
-      return false;
+    if (!email.trim()) {
+        setErrorMessage("Email is required.");
+        emailRef.current.focus();
+        return false;
+    } else if (!emailPattern.test(email)) {
+        setErrorMessage("Please enter a valid email address.");
+        emailRef.current.focus();
+        return false;
     }
 
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      confirmPasswordRef.current.focus();
-      return false;
+    // Validate password (including minimum length, uppercase, lowercase, number, and special character)
+    if (!password) {
+        setErrorMessage("Password is required.");
+        passwordRef.current.focus();
+        return false;
+    } else {
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordPattern.test(password)) {
+            setErrorMessage("Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.");
+            passwordRef.current.focus();
+            return false;
+        }
     }
 
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordPattern.test(password)) {
-      setErrorMessage("Password must be at least 8 characters, include uppercase, lowercase, a number, and a special character.");
-      passwordRef.current.focus();
-      return false;
+    // Validate confirm password
+    if (!confirmPassword) {
+        setErrorMessage("Please confirm your password.");
+        confirmPasswordRef.current.focus();
+        return false;
+    } else if (password !== confirmPassword) {
+        setErrorMessage("Passwords do not match.");
+        confirmPasswordRef.current.focus();
+        return false;
     }
 
+    // Check if user already exists
     const existingUser = JSON.parse(localStorage.getItem("user"));
     if (existingUser && existingUser.email === email) {
-      setErrorMessage("An account with this email already exists.");
-      emailRef.current.focus();
-      return false;
+        setErrorMessage("An account with this email already exists.");
+        emailRef.current.focus();
+        return false;
     }
 
     return true;
@@ -156,55 +179,61 @@ const validateForm = () => {
           }`}
         >
           <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-6">
-            <div>
-              <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
-                Username
-              </label>
-              <input
-                id="username-field"
-                ref={usernameRef}
-                type="text"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  handleInputChange(e);
-                }}
-                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-                  darkMode
-                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                    : "placeholder-gray-500"
-                }`}
-                placeholder="Enter your username"
-                required
-                autoComplete="username"
-              />
-            </div>
+          <div>
+  <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
+    Username
+  </label>
+  <input
+    id="username-field"
+    ref={usernameRef}
+    type="text"
+    value={username}
+    onChange={(e) => {
+      setUsername(e.target.value);
+      handleInputChange(e);
+    }}
+    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+      darkMode
+        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+        : "placeholder-gray-500"
+    } ${errorMessage.includes("Username") ? "border-red-500" : ""}`}
+    placeholder="Enter your username"
+    required
+    autoComplete="username"
+  />
+  {errorMessage.includes("Username") && (
+    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+  )}
+</div>
 
-            <div>
-              <label htmlFor="email-field" className="block text-sm sm:text-base font-semibold">
-                Email
-              </label>
-              <input
-                id="email-field"
-                ref={emailRef}
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  handleInputChange(e);
-                }}
-                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-                  darkMode
-                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                    : "placeholder-gray-500"
-                }`}
-                placeholder="Enter your email"
-                required
-                autoComplete="email"
-              />
-            </div>
+<div>
+  <label htmlFor="email-field" className="block text-sm sm:text-base font-semibold">
+    Email
+  </label>
+  <input
+    id="email-field"
+    ref={emailRef}
+    type="email"
+    value={email}
+    onChange={(e) => {
+      setEmail(e.target.value);
+      handleInputChange(e);
+    }}
+    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+      darkMode
+        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+        : "placeholder-gray-500"
+    } ${errorMessage.includes("Email") ? "border-red-500" : ""}`}
+    placeholder="Enter your email"
+    required
+    autoComplete="email"
+  />
+  {errorMessage.includes("Email") && (
+    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+  )}
+</div>
 
-            <div>
+<div>
   <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
     Password
   </label>
@@ -221,11 +250,14 @@ const validateForm = () => {
       darkMode
         ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
         : "placeholder-gray-500"
-    }`}
+    } ${errorMessage.includes("Password") ? "border-red-500" : ""}`}
     placeholder="Enter your password"
     required
     autoComplete="new-password"
   />
+  {errorMessage.includes("Password") && (
+    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+  )}
 </div>
 
 <div>
@@ -245,11 +277,14 @@ const validateForm = () => {
       darkMode
         ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
         : "placeholder-gray-500"
-    }`}
+    } ${errorMessage.includes("Passwords") ? "border-red-500" : ""}`}
     placeholder="Re-enter your password"
     required
     autoComplete="new-password"
   />
+  {errorMessage.includes("Passwords") && (
+    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+  )}
 </div>
 
 {/* Password match visual feedback */}
