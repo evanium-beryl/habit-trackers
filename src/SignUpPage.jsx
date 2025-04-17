@@ -7,6 +7,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showAlert, setShowAlert] = useState(false); // State for the push notification
   const navigate = useNavigate();
 
   // Read dark mode preference from localStorage on initial load
@@ -160,6 +161,12 @@ export default function SignUpPage() {
             </Link>
           </p>
         </div>
+      </div>
+      {/* Push notification alert */}
+      <div
+        className={`push-alert ${showAlert ? "show" : "hide"}`}
+      >
+        Signup successful! You can now log in.
       </div>
     </div>
   );
