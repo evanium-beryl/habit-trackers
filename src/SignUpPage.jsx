@@ -96,7 +96,7 @@ export default function SignUpPage() {
   className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base ${
     darkMode
       ? "bg-gray-700 text-white hover:bg-gray-600"
-      : "bg-gradient-to-r from-blue-200 via-yellow-200 to-white text-black hover:from-blue-300 hover:via-yellow-300"
+      : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
   }`}
 >
   {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
