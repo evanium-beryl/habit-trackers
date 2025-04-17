@@ -7,50 +7,66 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
   const [showAlert, setShowAlert] = useState(false); // State for the push notification
   const navigate = useNavigate();
 
-  // Read dark mode preference from localStorage on initial load
   useEffect(() => {
     const storedDarkMode = localStorage.getItem("darkMode");
     if (storedDarkMode) {
-      setDarkMode(JSON.parse(storedDarkMode)); // Initialize darkMode based on saved preference
+      setDarkMode(JSON.parse(storedDarkMode));
     }
   }, []);
 
-  // Handle dark mode toggle
   const handleDarkModeToggle = () => {
     setDarkMode((prevMode) => {
       const newMode = !prevMode;
-      localStorage.setItem("darkMode", JSON.stringify(newMode)); // Save the new dark mode setting
+      localStorage.setItem("darkMode", JSON.stringify(newMode));
       return newMode;
     });
   };
 
   const handleSignUp = (e) => {
     e.preventDefault();
+
+    // Basic validation
+    if (!username.trim()) {
+      setErrorMessage("Username is required.");
+      return;
+    }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrorMessage("A valid email is required.");
+      return;
+    }
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessage("Passwords do not match.");
       return;
     }
 
+    // Check for existing user
+    const existingUser = JSON.parse(localStorage.getItem("user"));
+    if (existingUser && existingUser.email === email) {
+      setErrorMessage("An account with this email already exists.");
+      return;
+    }
+
+    // Clear error message
+    setErrorMessage("");
+
     // Store user data in localStorage
     localStorage.setItem("user", JSON.stringify({ username, email, password }));
-    setShowAlert(true); // Show alert
-    setTimeout(() => {
-      setShowAlert(false); // Hide alert after 3 seconds
-    }, 2000);
+    setShowAlert(true);
 
     setTimeout(() => {
-      navigate("/"); // Redirect after alert is gone
-    }, 2500); // Allow navigation after alert hides
+      setShowAlert(false);
+      navigate("/");
+    }, 2500);
   };
 
-  // Inline styles for the push notification
   const notificationStyle = {
     position: "fixed",
     top: "20px",
-    right: showAlert ? "20px" : "-300px", // Dynamic positioning
+    right: showAlert ? "20px" : "-300px",
     backgroundColor: "#4caf50",
     color: "white",
     padding: "15px",
@@ -59,7 +75,7 @@ export default function SignUpPage() {
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     zIndex: 1000,
   };
-  
+
   return (
     <div
       className={`min-h-screen p-5 flex flex-col items-center ${
@@ -69,7 +85,6 @@ export default function SignUpPage() {
       }`}
     >
       <div className="w-full max-w-6xl">
-        {/* Header & Dark Mode Toggle */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-center">Habit Tracker</h1>
           <button
@@ -80,99 +95,100 @@ export default function SignUpPage() {
           </button>
         </div>
 
-        {/* Write-up Below Dark Mode Toggle */}
         <p
           className="text-center text-lg italic mb-10"
           style={{ color: darkMode ? "#f9f9f9" : "#333" }}
         >
-          Stay consistent, build better habits, and track your progress effortlessly with our habit tracker.{" "}
+          Stay consistent, build better habits, and track your progress effortlessly with our habit tracker. {" "}
           <strong>Small steps, big results!</strong>
         </p>
 
-        {/* Sign-up Form */}
         <form onSubmit={handleSignUp} className="w-full max-w-sm mx-auto">
-  <div className="mb-4">
-    <label htmlFor="username-field" className="block text-sm font-semibold">
-      Username
-    </label>
-    <input
-      id="username-field"  // Unique id for username
-      type="text"
-      value={username}
-      onChange={(e) => setUsername(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Enter your username"
-      required
-      autocomplete="username"
-      style={darkMode ? { color: "white" } : {}}
-    />
-  </div>
+          <div className="mb-4">
+            <label htmlFor="username-field" className="block text-sm font-semibold">
+              Username
+            </label>
+            <input
+              id="username-field"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full p-2 mt-2 border rounded"
+              placeholder="Enter your username"
+              required
+              autoComplete="username"
+              style={darkMode ? { color: "white" } : {}}
+            />
+          </div>
 
-  <div className="mb-4">
-    <label htmlFor="email-field" className="block text-sm font-semibold">
-      Email
-    </label>
-    <input
-      id="email-field"  // Unique id for email
-      type="email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Enter your email"
-      required
-      autocomplete="email"
-      style={darkMode ? { color: "white" } : {}}
-    />
-  </div>
+          <div className="mb-4">
+            <label htmlFor="email-field" className="block text-sm font-semibold">
+              Email
+            </label>
+            <input
+              id="email-field"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 mt-2 border rounded"
+              placeholder="Enter your email"
+              required
+              autoComplete="email"
+              style={darkMode ? { color: "white" } : {}}
+            />
+          </div>
 
-  <div className="mb-4">
-    <label htmlFor="password-field" className="block text-sm font-semibold">
-      Password
-    </label>
-    <input
-      id="password-field"  // Unique id for password
-      type="password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Enter your password"
-      required
-      autocomplete="new-password"
-      style={darkMode ? { color: "white" } : {}}
-    />
-  </div>
+          <div className="mb-4">
+            <label htmlFor="password-field" className="block text-sm font-semibold">
+              Password
+            </label>
+            <input
+              id="password-field"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 mt-2 border rounded"
+              placeholder="Enter your password"
+              required
+              autoComplete="new-password"
+              style={darkMode ? { color: "white" } : {}}
+            />
+          </div>
 
-  <div className="mb-4">
-    <label htmlFor="confirm-password-field" className="block text-sm font-semibold">
-      Re-enter Password
-    </label>
-    <input
-      id="confirm-password-field"  // Unique id for confirmPassword
-      type="password"
-      value={confirmPassword}
-      onChange={(e) => setConfirmPassword(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Re-enter your password"
-      required
-      autocomplete="new-password"
-      style={darkMode ? { color: "white" } : {}}
-    />
-  </div>
+          <div className="mb-4">
+            <label htmlFor="confirm-password-field" className="block text-sm font-semibold">
+              Re-enter Password
+            </label>
+            <input
+              id="confirm-password-field"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full p-2 mt-2 border rounded"
+              placeholder="Re-enter your password"
+              required
+              autoComplete="new-password"
+              style={darkMode ? { color: "white" } : {}}
+            />
+          </div>
 
-  <div className="flex justify-center">
-    <button
-      type="submit"
-      className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
-    >
-      Sign Up
-    </button>
-  </div>
-</form>
+          {errorMessage && (
+            <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
+          )}
 
-        {/* Redirect to Login Link */}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+            >
+              Sign Up
+            </button>
+          </div>
+        </form>
+
         <div className="text-center mt-4">
           <p className="text-sm">
-            Already have an account?{" "}
+            Already have an account? {" "}
             <Link
               to="/"
               className="text-teal-500 hover:text-teal-600 font-semibold"
@@ -182,7 +198,7 @@ export default function SignUpPage() {
           </p>
         </div>
       </div>
-      {/* Push Notification */}
+
       <div style={notificationStyle}>Signup successful! You can now log in.</div>
     </div>
   );
