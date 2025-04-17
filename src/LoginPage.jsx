@@ -118,16 +118,19 @@ const errorNotificationStyle = {
       Email
     </label>
     <input
-      id="email-field" // Unique id for email field
-      type="email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Enter your email"
-      required
-      autoComplete="email"
-      style={darkMode ? { color: "white" } : {}}
-    />
+  id="email-field" // Unique id for email field
+  type="email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  className={`w-full p-2 mt-2 border rounded ${
+    darkMode
+      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+      : "placeholder-gray-500"
+  }`}
+  placeholder="Enter your email"
+  required
+  autoComplete="email"
+/>
   </div>
 
   <div className="mb-4">

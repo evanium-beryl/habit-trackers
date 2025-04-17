@@ -71,8 +71,8 @@ export default function SignUpPage() {
     zIndex: 1000,
   };
 
-    return (
-      <div
+  return (
+    <div
       className={`min-h-screen ${
         darkMode
           ? "bg-gray-900 text-white"
@@ -92,119 +92,142 @@ export default function SignUpPage() {
             Habit Tracker
           </h1>
           <button
-  onClick={handleDarkModeToggle}
-  className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base ${
-    darkMode
-      ? "bg-gray-700 text-white hover:bg-gray-600"
-      : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
-  }`}
->
-  {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-</button>
+            onClick={handleDarkModeToggle}
+            className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base ${
+              darkMode
+                ? "bg-gray-700 text-white hover:bg-gray-600"
+                : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
+            }`}
+          >
+            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+          </button>
         </div>
       </div>
-  
-        <div className="px-4 mt-10">
-          <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
-            Stay consistent, build better habits, and track your progress effortlessly. <strong>Small steps, big results!</strong>
-          </p>
-  
-          <form onSubmit={handleSignUp} className="w-full max-w-sm mx-auto space-y-4 sm:space-y-6">
-            <div>
-              <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
-                Username
-              </label>
-              <input
-  id="username-field"
-  type="text"
-  value={username}
-  onChange={(e) => setUsername(e.target.value)}
-  className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-    darkMode
-      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-      : "placeholder-gray-500"
-  }`}
-  placeholder="Enter your username"
-  required
-  autoComplete="username"
-/>
-            </div>
-  
-            <div>
-              <label htmlFor="email-field" className="block text-sm sm:text-base font-semibold">
-                Email
-              </label>
-              <input
-  id="email-field"
-  type="email"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
-    darkMode ? "text-white bg-gray-800" : "text-black bg-white"
-  }`}
-  placeholder="Enter your email"
-  required
-  autoComplete="email"
-/>
-            </div>
-  
-            <div>
-              <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
-                Password
-              </label>
-              <input
-  id="password-field"
-  type="password"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
-    darkMode ? "text-white bg-gray-800" : "text-black bg-white"
-  }`}
-  placeholder="Enter your password"
-  required
-  autoComplete="new-password"
-/>
-            </div>
-  
-            <div>
-              <label htmlFor="confirm-password-field" className="block text-sm sm:text-base font-semibold">
-                Re-enter Password
-              </label>
-              <input
-  id="confirm-password-field"
-  type="password"
-  value={confirmPassword}
-  onChange={(e) => setConfirmPassword(e.target.value)}
-  className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
-    darkMode ? "text-white bg-gray-800" : "text-black bg-white"
-  }`}
-  placeholder="Re-enter your password"
-  required
-  autoComplete="new-password"
-/>
-            </div>
-  
-            {errorMessage && <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>}
-  
-            <button
-              type="submit"
-              className="w-full py-3 bg-green-500 text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+
+      <div className="px-4 mt-10">
+        <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
+          Stay consistent, build better habits, and track your progress
+          effortlessly. <strong>Small steps, big results!</strong>
+        </p>
+
+        <form
+          onSubmit={handleSignUp}
+          className="w-full max-w-sm mx-auto space-y-4 sm:space-y-6"
+        >
+          <div>
+            <label
+              htmlFor="username-field"
+              className="block text-sm sm:text-base font-semibold"
             >
-              Sign Up
-            </button>
-          </form>
-  
-          <div className="text-center mt-4">
-            <p className="text-sm sm:text-base">
-              Already have an account?{" "}
-              <Link to="/" className="text-teal-500 hover:text-teal-600 font-semibold">
-                Login here
-              </Link>
-            </p>
+              Username
+            </label>
+            <input
+              id="username-field"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                darkMode
+                  ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                  : "placeholder-gray-500"
+              }`}
+              placeholder="Enter your username"
+              required
+              autoComplete="username"
+            />
           </div>
+
+          <div>
+            <label
+              htmlFor="email-field"
+              className="block text-sm sm:text-base font-semibold"
+            >
+              Email
+            </label>
+            <input
+              id="email-field"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
+                darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+              }`}
+              placeholder="Enter your email"
+              required
+              autoComplete="email"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password-field"
+              className="block text-sm sm:text-base font-semibold"
+            >
+              Password
+            </label>
+            <input
+              id="password-field"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
+                darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+              }`}
+              placeholder="Enter your password"
+              required
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirm-password-field"
+              className="block text-sm sm:text-base font-semibold"
+            >
+              Re-enter Password
+            </label>
+            <input
+              id="confirm-password-field"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
+                darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+              }`}
+              placeholder="Re-enter your password"
+              required
+              autoComplete="new-password"
+            />
+          </div>
+
+          {errorMessage && (
+            <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>
+          )}
+
+          <button
+            type="submit"
+            className="w-full py-3 bg-green-500 text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+          >
+            Sign Up
+          </button>
+        </form>
+
+        <div className="text-center mt-4">
+          <p className="text-sm sm:text-base">
+            Already have an account?{" "}
+            <Link
+              to="/"
+              className="text-teal-500 hover:text-teal-600 font-semibold"
+            >
+              Login here
+            </Link>
+          </p>
         </div>
-  
-        <div style={notificationStyle}>Signup successful! You can now log in.</div>
       </div>
-    );
-  }
+
+      <div style={notificationStyle}>
+        Signup successful! You can now log in.
+      </div>
+    </div>
+  );
+}
