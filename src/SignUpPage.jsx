@@ -68,29 +68,27 @@ const validateForm = () => {
     }
 
     // Validate email format
-    const emailPattern = /^[^\s@]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}$/;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
-        setErrorMessage("Email is required.");
-        emailRef.current.focus();
-        return false;
+      setErrorMessage("Email is required.");
+      emailRef.current.focus();
+      return false;
     } else if (!emailPattern.test(email)) {
-        setErrorMessage("Please enter a valid email address.");
-        emailRef.current.focus();
-        return false;
+      setErrorMessage("Please enter a valid email address.");
+      emailRef.current.focus();
+      return false;
     }
 
-    // Validate password (including minimum length, uppercase, lowercase, number, and special character)
+    // Validate password
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$/;
     if (!password) {
-        setErrorMessage("Password is required.");
-        passwordRef.current.focus();
-        return false;
-    } else {
-        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordPattern.test(password)) {
-            setErrorMessage("Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.");
-            passwordRef.current.focus();
-            return false;
-        }
+      setErrorMessage("Password is required.");
+      passwordRef.current.focus();
+      return false;
+    } else if (!passwordPattern.test(password)) {
+      setErrorMessage("Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.");
+      passwordRef.current.focus();
+      return false;
     }
 
     // Validate confirm password
@@ -115,6 +113,19 @@ const validateForm = () => {
     return true;
 };
 
+const handleInputChange = (e, field) => {
+  const value = e.target.value;
+  if (field === "username" && errorMessage.includes("Username")) {
+    setErrorMessage("");
+  } else if (field === "email" && errorMessage.includes("Email")) {
+    setErrorMessage("");
+  } else if (field === "password" && errorMessage.includes("Password")) {
+    setErrorMessage("");
+  } else if (field === "confirmPassword" && errorMessage.includes("Passwords")) {
+    setErrorMessage("");
+  }
+};
+
   const notificationStyle = {
     position: "fixed",
     top: showAlert ? "20px" : "-100px",
@@ -127,11 +138,6 @@ const validateForm = () => {
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     zIndex: 1000,
     opacity: showAlert ? 1 : 0,
-  };
-
-  const handleInputChange = (e) => {
-    // Clear error message when the user starts typing again
-    setErrorMessage("");
   };
 
   const passwordMatchStyle = password === confirmPassword ? "text-green-500" : "text-red-500";
@@ -190,7 +196,7 @@ const validateForm = () => {
     value={username}
     onChange={(e) => {
       setUsername(e.target.value);
-      handleInputChange(e);
+      handleInputChange(e, "username");
     }}
     className={`w-full p-3 border rounded-md text-sm sm:text-base ${
       darkMode
@@ -217,7 +223,7 @@ const validateForm = () => {
     value={email}
     onChange={(e) => {
       setEmail(e.target.value);
-      handleInputChange(e);
+      handleInputChange(e, "email");
     }}
     className={`w-full p-3 border rounded-md text-sm sm:text-base ${
       darkMode
@@ -244,7 +250,7 @@ const validateForm = () => {
     value={password}
     onChange={(e) => {
       setPassword(e.target.value);
-      handleInputChange(e);
+      handleInputChange(e, "password");
     }}
     className={`w-full p-3 border rounded-md text-sm sm:text-base ${
       darkMode
@@ -271,7 +277,7 @@ const validateForm = () => {
     value={confirmPassword}
     onChange={(e) => {
       setConfirmPassword(e.target.value);
-      handleInputChange(e);
+      handleInputChange(e, "confirmPassword");
     }}
     className={`w-full p-3 border rounded-md text-sm sm:text-base ${
       darkMode
