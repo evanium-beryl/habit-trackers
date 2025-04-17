@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUpPage() {
@@ -9,7 +9,14 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  // Refs for focus management
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
   useEffect(() => {
     const storedDarkMode = localStorage.getItem("darkMode");
@@ -29,23 +36,32 @@ export default function SignUpPage() {
   const validateForm = () => {
     if (!username.trim()) {
       setErrorMessage("Username is required.");
-      document.getElementById("username-field").focus();
+      usernameRef.current.focus();
       return false;
     }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setErrorMessage("A valid email is required.");
-      document.getElementById("email-field").focus();
+      emailRef.current.focus();
       return false;
     }
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
-      document.getElementById("confirm-password-field").focus();
+      confirmPasswordRef.current.focus();
       return false;
     }
+
+    // Password validation - Ensure it has uppercase, lowercase, number, and special char
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordPattern.test(password)) {
+      setErrorMessage("Password must be at least 8 characters, include uppercase, lowercase, a number, and a special character.");
+      passwordRef.current.focus();
+      return false;
+    }
+
     const existingUser = JSON.parse(localStorage.getItem("user"));
     if (existingUser && existingUser.email === email) {
       setErrorMessage("An account with this email already exists.");
-      document.getElementById("email-field").focus();
+      emailRef.current.focus();
       return false;
     }
     return true;
@@ -55,12 +71,15 @@ export default function SignUpPage() {
     e.preventDefault();
     if (!validateForm()) return;
 
+    setIsSubmitting(true); // Start loading
     setErrorMessage("");
+
     localStorage.setItem("user", JSON.stringify({ username, email, password }));
     setShowAlert(true);
 
     setTimeout(() => {
       setShowAlert(false);
+      setIsSubmitting(false); // Stop loading
       navigate("/");
     }, 2500);
   };
@@ -79,12 +98,17 @@ export default function SignUpPage() {
     opacity: showAlert ? 1 : 0,
   };
 
+  const handleInputChange = (e) => {
+    // Clear error message when the user starts typing again
+    setErrorMessage("");
+  };
+
+  const passwordMatchStyle = password === confirmPassword ? "text-green-500" : "text-red-500";
+
   return (
     <div
       className={`min-h-screen ${
-        darkMode
-          ? "bg-gray-900 text-white"
-          : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
+        darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
       }`}
     >
       {/* Navbar */}
@@ -96,9 +120,7 @@ export default function SignUpPage() {
         }`}
       >
         <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">
-            Habit Tracker
-          </h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">Habit Tracker</h1>
           <button
             onClick={handleDarkModeToggle}
             className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base ${
@@ -114,30 +136,31 @@ export default function SignUpPage() {
 
       <div className="px-4 mt-10">
         <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
-          Stay consistent, build better habits, and track your progress
-          effortlessly. <strong>Small steps, big results!</strong>
+          Stay consistent, build better habits, and track your progress effortlessly.{" "}
+          <strong>Small steps, big results!</strong>
         </p>
 
         <div
-  className={`p-6 rounded-lg shadow-md max-w-md mx-auto ${
-    darkMode
-      ? "bg-gray-900 border border-gray-700"
-      : "bg-gradient-to-r from-blue-50 via-yellow-100 to-white border border-gray-300"
-  }`}
->
+          className={`p-6 rounded-lg shadow-md max-w-md mx-auto ${
+            darkMode
+              ? "bg-gray-900 border border-gray-700"
+              : "bg-gradient-to-r from-blue-50 via-yellow-100 to-white border border-gray-300"
+          }`}
+        >
           <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-6">
             <div>
-              <label
-                htmlFor="username-field"
-                className="block text-sm sm:text-base font-semibold"
-              >
+              <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
                 Username
               </label>
               <input
                 id="username-field"
+                ref={usernameRef}
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  handleInputChange(e);
+                }}
                 className={`w-full p-3 border rounded-md text-sm sm:text-base ${
                   darkMode
                     ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
@@ -150,17 +173,18 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="email-field"
-                className="block text-sm sm:text-base font-semibold"
-              >
+              <label htmlFor="email-field" className="block text-sm sm:text-base font-semibold">
                 Email
               </label>
               <input
                 id="email-field"
+                ref={emailRef}
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  handleInputChange(e);
+                }}
                 className={`w-full p-3 border rounded-md text-sm sm:text-base ${
                   darkMode
                     ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
@@ -173,17 +197,18 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="password-field"
-                className="block text-sm sm:text-base font-semibold"
-              >
+              <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
                 Password
               </label>
               <input
                 id="password-field"
+                ref={passwordRef}
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  handleInputChange(e);
+                }}
                 className={`w-full p-3 border rounded-md text-sm sm:text-base ${
                   darkMode
                     ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
@@ -196,17 +221,18 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="confirm-password-field"
-                className="block text-sm sm:text-base font-semibold"
-              >
+              <label htmlFor="confirm-password-field" className="block text-sm sm:text-base font-semibold">
                 Re-enter Password
               </label>
               <input
                 id="confirm-password-field"
+                ref={confirmPasswordRef}
                 type="password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  handleInputChange(e);
+                }}
                 className={`w-full p-3 border rounded-md text-sm sm:text-base ${
                   darkMode
                     ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
@@ -218,15 +244,19 @@ export default function SignUpPage() {
               />
             </div>
 
-            {errorMessage && (
-              <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>
-            )}
+            {/* Password match visual feedback */}
+            <p className={`${passwordMatchStyle} text-sm mt-1`}>
+              {password === confirmPassword ? "Passwords match" : "Passwords do not match"}
+            </p>
+
+            {errorMessage && <p className="error-message text-red-500 text-sm sm:text-base">{errorMessage}</p>}
 
             <button
               type="submit"
-              className="w-full py-3 bg-green-500 text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+              className={`w-full py-3 ${isSubmitting ? 'bg-gray-400' : 'bg-green-500'} text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105`}
+              disabled={isSubmitting}
             >
-              Sign Up
+              {isSubmitting ? "Signing Up..." : "Sign Up"}
             </button>
           </form>
         </div>
@@ -234,10 +264,7 @@ export default function SignUpPage() {
         <div className="text-center mt-4">
           <p className="text-sm sm:text-base">
             Already have an account?{" "}
-            <Link
-              to="/"
-              className="text-teal-500 hover:text-teal-600 font-semibold"
-            >
+            <Link to="/" className="text-teal-500 hover:text-teal-600 font-semibold">
               Login here
             </Link>
           </p>
@@ -245,7 +272,7 @@ export default function SignUpPage() {
       </div>
 
       <div style={notificationStyle} role="alert" aria-live="assertive">
-        Signup successful! You can now log in.
+        Sign-up successful! You can now log in.
       </div>
     </div>
   );
