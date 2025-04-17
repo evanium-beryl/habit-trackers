@@ -71,147 +71,116 @@ export default function SignUpPage() {
     zIndex: 1000,
   };
 
-  return (
-    <div
-      className={`min-h-screen flex flex-col items-center p-5 sm:p-6 md:p-8 lg:p-10 ${
-        darkMode
-          ? "bg-gray-900 text-white"
-          : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
-      }`}
-    >
-      <div className="w-full max-w-lg lg:max-w-xl">
-      <div className="flex items-center justify-between mb-6">
-  {/* Site Name */}
-  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-wide text-center lg:text-left">
-    Habit Tracker
-  </h1>
-  
-  {/* Dark Mode Toggle */}
-  <button
-    onClick={handleDarkModeToggle}
-    className="px-3 py-2 sm:px-4 sm:py-3 bg-gray-700 text-white rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
-  >
-    {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-  </button>
-</div>
-
-        <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
-          Stay consistent, build better habits, and track your progress effortlessly.{" "}
-          <strong>Small steps, big results!</strong>
-        </p>
-
-        <form
-          onSubmit={handleSignUp}
-          className="w-full max-w-sm mx-auto space-y-4 sm:space-y-6"
-        >
-          <div>
-            <label
-              htmlFor="username-field"
-              className="block text-sm sm:text-base font-semibold"
+    return (
+      <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"}`}>
+        {/* Navbar */}
+        <div className={`w-full ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"} py-4 px-6 shadow-lg`}>
+          <div className="flex justify-between items-center max-w-6xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">Habit Tracker</h1>
+            <button
+              onClick={handleDarkModeToggle}
+              className="px-3 py-2 bg-gray-700 text-white rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
             >
-              Username
-            </label>
-            <input
-              id="username-field"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 border rounded-md text-sm sm:text-base"
-              placeholder="Enter your username"
-              required
-              autoComplete="username"
-              style={darkMode ? { color: "white" } : {}}
-            />
+              {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+            </button>
           </div>
-
-          <div>
-            <label
-              htmlFor="email-field"
-              className="block text-sm sm:text-base font-semibold"
-            >
-              Email
-            </label>
-            <input
-              id="email-field"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border rounded-md text-sm sm:text-base"
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-              style={darkMode ? { color: "white" } : {}}
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password-field"
-              className="block text-sm sm:text-base font-semibold"
-            >
-              Password
-            </label>
-            <input
-              id="password-field"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border rounded-md text-sm sm:text-base"
-              placeholder="Enter your password"
-              required
-              autoComplete="new-password"
-              style={darkMode ? { color: "white" } : {}}
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="confirm-password-field"
-              className="block text-sm sm:text-base font-semibold"
-            >
-              Re-enter Password
-            </label>
-            <input
-              id="confirm-password-field"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-3 border rounded-md text-sm sm:text-base"
-              placeholder="Re-enter your password"
-              required
-              autoComplete="new-password"
-              style={darkMode ? { color: "white" } : {}}
-            />
-          </div>
-
-          {errorMessage && (
-            <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>
-          )}
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-green-500 text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
-          >
-            Sign Up
-          </button>
-        </form>
-
-        <div className="text-center mt-4">
-          <p className="text-sm sm:text-base">
-            Already have an account?{" "}
-            <Link
-              to="/"
-              className="text-teal-500 hover:text-teal-600 font-semibold"
-            >
-              Login here
-            </Link>
-          </p>
         </div>
+  
+        <div className="px-4">
+          <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
+            Stay consistent, build better habits, and track your progress effortlessly. <strong>Small steps, big results!</strong>
+          </p>
+  
+          <form onSubmit={handleSignUp} className="w-full max-w-sm mx-auto space-y-4 sm:space-y-6">
+            <div>
+              <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
+                Username
+              </label>
+              <input
+                id="username-field"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full p-3 border rounded-md text-sm sm:text-base"
+                placeholder="Enter your username"
+                required
+                autoComplete="username"
+                style={darkMode ? { color: "white" } : {}}
+              />
+            </div>
+  
+            <div>
+              <label htmlFor="email-field" className="block text-sm sm:text-base font-semibold">
+                Email
+              </label>
+              <input
+                id="email-field"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-3 border rounded-md text-sm sm:text-base"
+                placeholder="Enter your email"
+                required
+                autoComplete="email"
+                style={darkMode ? { color: "white" } : {}}
+              />
+            </div>
+  
+            <div>
+              <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
+                Password
+              </label>
+              <input
+                id="password-field"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-3 border rounded-md text-sm sm:text-base"
+                placeholder="Enter your password"
+                required
+                autoComplete="new-password"
+                style={darkMode ? { color: "white" } : {}}
+              />
+            </div>
+  
+            <div>
+              <label htmlFor="confirm-password-field" className="block text-sm sm:text-base font-semibold">
+                Re-enter Password
+              </label>
+              <input
+                id="confirm-password-field"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-3 border rounded-md text-sm sm:text-base"
+                placeholder="Re-enter your password"
+                required
+                autoComplete="new-password"
+                style={darkMode ? { color: "white" } : {}}
+              />
+            </div>
+  
+            {errorMessage && <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>}
+  
+            <button
+              type="submit"
+              className="w-full py-3 bg-green-500 text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+            >
+              Sign Up
+            </button>
+          </form>
+  
+          <div className="text-center mt-4">
+            <p className="text-sm sm:text-base">
+              Already have an account?{" "}
+              <Link to="/" className="text-teal-500 hover:text-teal-600 font-semibold">
+                Login here
+              </Link>
+            </p>
+          </div>
+        </div>
+  
+        <div style={notificationStyle}>Signup successful! You can now log in.</div>
       </div>
-
-      <div style={notificationStyle}>
-        Signup successful! You can now log in.
-      </div>
-    </div>
-  );
-}
+    );
+  }
