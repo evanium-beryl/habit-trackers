@@ -36,7 +36,10 @@ export default function SignUpPage() {
 
     // Store user data in localStorage
     localStorage.setItem("user", JSON.stringify({ username, email, password }));
-    alert("Signup successful! You can now log in.");
+    setShowAlert(true); // Show alert
+    setTimeout(() => {
+      setShowAlert(false); // Hide alert after 3 seconds
+    }, 3000);
     navigate("/"); // Redirect to login after signup
   };
 
