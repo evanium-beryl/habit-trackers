@@ -104,7 +104,7 @@ export default function SignUpPage() {
         </div>
       </div>
   
-        <div className="px-4">
+        <div className="px-4 mt-10">
           <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
             Stay consistent, build better habits, and track your progress effortlessly. <strong>Small steps, big results!</strong>
           </p>
