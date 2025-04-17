@@ -138,16 +138,19 @@ const errorNotificationStyle = {
       Password
     </label>
     <input
-      id="password-field" // Unique id for password field
-      type="password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Enter your password"
-      required
-      autoComplete="current-password"
-      style={darkMode ? { color: "white" } : {}}
-    />
+  id="password-field" // Unique id for password field
+  type="password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  className={`w-full p-2 mt-2 border rounded ${
+    darkMode
+      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+      : "placeholder-gray-500"
+  }`}
+  placeholder="Enter your password"
+  required
+  autoComplete="current-password"
+/>
   </div>
 
   <div className="flex justify-center">
