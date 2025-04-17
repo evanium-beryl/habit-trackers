@@ -135,16 +135,17 @@ export default function SignUpPage() {
                 Email
               </label>
               <input
-                id="email-field"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border rounded-md text-sm sm:text-base"
-                placeholder="Enter your email"
-                required
-                autoComplete="email"
-                style={darkMode ? { color: "white" } : {}}
-              />
+  id="email-field"
+  type="email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
+    darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+  }`}
+  placeholder="Enter your email"
+  required
+  autoComplete="email"
+/>
             </div>
   
             <div>
@@ -152,16 +153,17 @@ export default function SignUpPage() {
                 Password
               </label>
               <input
-                id="password-field"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border rounded-md text-sm sm:text-base"
-                placeholder="Enter your password"
-                required
-                autoComplete="new-password"
-                style={darkMode ? { color: "white" } : {}}
-              />
+  id="password-field"
+  type="password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
+    darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+  }`}
+  placeholder="Enter your password"
+  required
+  autoComplete="new-password"
+/>
             </div>
   
             <div>
@@ -169,16 +171,17 @@ export default function SignUpPage() {
                 Re-enter Password
               </label>
               <input
-                id="confirm-password-field"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-3 border rounded-md text-sm sm:text-base"
-                placeholder="Re-enter your password"
-                required
-                autoComplete="new-password"
-                style={darkMode ? { color: "white" } : {}}
-              />
+  id="confirm-password-field"
+  type="password"
+  value={confirmPassword}
+  onChange={(e) => setConfirmPassword(e.target.value)}
+  className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
+    darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+  }`}
+  placeholder="Re-enter your password"
+  required
+  autoComplete="new-password"
+/>
             </div>
   
             {errorMessage && <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>}
