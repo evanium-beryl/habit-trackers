@@ -96,14 +96,14 @@ export default function SignUpPage() {
       Username
     </label>
     <input
-      id="username"
+      id="username-field"  // Unique id for username
       type="text"
       value={username}
       onChange={(e) => setUsername(e.target.value)}
       className="w-full p-2 mt-2 border rounded"
       placeholder="Enter your username"
       required
-      autocomplete="username"  // Added this line
+      autocomplete="username"
       style={darkMode ? { color: "white" } : {}}
     />
   </div>
@@ -113,14 +113,14 @@ export default function SignUpPage() {
       Email
     </label>
     <input
-      id="email"
+      id="email-field"  // Unique id for email
       type="email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       className="w-full p-2 mt-2 border rounded"
       placeholder="Enter your email"
       required
-      autocomplete="email"  // Added this line
+      autocomplete="email"
       style={darkMode ? { color: "white" } : {}}
     />
   </div>
@@ -130,14 +130,14 @@ export default function SignUpPage() {
       Password
     </label>
     <input
-      id="password"
+      id="password-field"  // Unique id for password
       type="password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
       className="w-full p-2 mt-2 border rounded"
       placeholder="Enter your password"
       required
-      autocomplete="new-password"  // Added this line
+      autocomplete="new-password"
       style={darkMode ? { color: "white" } : {}}
     />
   </div>
@@ -147,14 +147,14 @@ export default function SignUpPage() {
       Re-enter Password
     </label>
     <input
-      id="confirmPassword"
+      id="confirm-password-field"  // Unique id for confirmPassword
       type="password"
       value={confirmPassword}
       onChange={(e) => setConfirmPassword(e.target.value)}
       className="w-full p-2 mt-2 border rounded"
       placeholder="Re-enter your password"
       required
-      autocomplete="new-password"  // Added this line
+      autocomplete="new-password"
       style={darkMode ? { color: "white" } : {}}
     />
   </div>

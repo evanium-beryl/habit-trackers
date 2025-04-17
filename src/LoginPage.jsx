@@ -116,14 +116,14 @@ const errorNotificationStyle = {
       Email
     </label>
     <input
-      id="email"
+      id="email-field"  // Unique id for the email field
       type="email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       className="w-full p-2 mt-2 border rounded"
       placeholder="Enter your email"
       required
-      autocomplete="email"  // Added autocomplete for email
+      autocomplete="email"
       style={darkMode ? { color: "white" } : {}}
     />
   </div>
@@ -133,14 +133,14 @@ const errorNotificationStyle = {
       Password
     </label>
     <input
-      id="password"
+      id="password-field"  // Unique id for the password field
       type="password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
       className="w-full p-2 mt-2 border rounded"
       placeholder="Enter your password"
       required
-      autocomplete="current-password"  // Added autocomplete for password
+      autocomplete="current-password"
       style={darkMode ? { color: "white" } : {}}
     />
   </div>
