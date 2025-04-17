@@ -246,13 +246,11 @@ export default function SignUpPage() {
               />
             </div>
 
-            {/* Password match visual feedback */}
             <p className={`${passwordMatchStyle} text-sm mt-1`}>
-              {password === confirmPassword ? "Passwords match" : "Passwords do not match"}
-            </p>
-
-            {errorMessage && <p className="error-message text-red-500 text-sm sm:text-base">{errorMessage}</p>}
-
+  {password && confirmPassword && (password === confirmPassword 
+    ? "Passwords match" 
+    : "Passwords do not match")}
+</p>
             <button
               type="submit"
               className={`w-full py-3 ${isSubmitting ? 'bg-gray-400' : 'bg-green-500'} text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105`}
