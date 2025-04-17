@@ -80,13 +80,16 @@ export default function SignUpPage() {
       }`}
     >
       <div className="w-full max-w-lg lg:max-w-xl">
-      <div className="flex justify-between items-center mb-6">
-  <h1 className="text-3xl sm:text-4xl font-bold text-center tracking-wide">
+      <div className="flex items-center justify-between mb-6">
+  {/* Site Name */}
+  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-wide text-center lg:text-left">
     Habit Tracker
   </h1>
+  
+  {/* Dark Mode Toggle */}
   <button
     onClick={handleDarkModeToggle}
-    className="ml-4 px-3 py-2 sm:px-4 sm:py-3 bg-gray-700 text-white rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
+    className="px-3 py-2 sm:px-4 sm:py-3 bg-gray-700 text-white rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
   >
     {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
   </button>
