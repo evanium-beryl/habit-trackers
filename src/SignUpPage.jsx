@@ -26,27 +26,34 @@ export default function SignUpPage() {
     });
   };
 
-  const handleSignUp = (e) => {
-    e.preventDefault();
-
+  const validateForm = () => {
     if (!username.trim()) {
       setErrorMessage("Username is required.");
-      return;
+      document.getElementById("username-field").focus();
+      return false;
     }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setErrorMessage("A valid email is required.");
-      return;
+      document.getElementById("email-field").focus();
+      return false;
     }
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
-      return;
+      document.getElementById("confirm-password-field").focus();
+      return false;
     }
-
     const existingUser = JSON.parse(localStorage.getItem("user"));
     if (existingUser && existingUser.email === email) {
       setErrorMessage("An account with this email already exists.");
-      return;
+      document.getElementById("email-field").focus();
+      return false;
     }
+    return true;
+  };
+
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
     setErrorMessage("");
     localStorage.setItem("user", JSON.stringify({ username, email, password }));
@@ -60,15 +67,16 @@ export default function SignUpPage() {
 
   const notificationStyle = {
     position: "fixed",
-    top: "20px",
-    right: showAlert ? "20px" : "-300px",
+    top: showAlert ? "20px" : "-100px",
+    right: "20px",
     backgroundColor: "#4caf50",
     color: "white",
     padding: "15px",
     borderRadius: "5px",
-    transition: "right 0.5s ease-in-out",
+    transition: "top 0.5s ease-in-out, opacity 0.5s ease-in-out",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     zIndex: 1000,
+    opacity: showAlert ? 1 : 0,
   };
 
   return (
@@ -111,118 +119,115 @@ export default function SignUpPage() {
         </p>
 
         <div
-  className={`p-6 border rounded-lg shadow-md max-w-md mx-auto ${
-    darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
-  }`}
->
-  <form
-    onSubmit={handleSignUp}
-    className="space-y-4 sm:space-y-6"
-  >
-    <div>
-      <label
-        htmlFor="username-field"
-        className="block text-sm sm:text-base font-semibold"
-      >
-        Username
-      </label>
-      <input
-        id="username-field"
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-          darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-            : "placeholder-gray-500"
-        }`}
-        placeholder="Enter your username"
-        required
-        autoComplete="username"
-      />
-    </div>
+          className={`p-6 border rounded-lg shadow-md max-w-md mx-auto ${
+            darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
+          }`}
+        >
+          <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-6">
+            <div>
+              <label
+                htmlFor="username-field"
+                className="block text-sm sm:text-base font-semibold"
+              >
+                Username
+              </label>
+              <input
+                id="username-field"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                    : "placeholder-gray-500"
+                }`}
+                placeholder="Enter your username"
+                required
+                autoComplete="username"
+              />
+            </div>
 
-    <div>
-      <label
-        htmlFor="email-field"
-        className="block text-sm sm:text-base font-semibold"
-      >
-        Email
-      </label>
-      <input
-        id="email-field"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-          darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-            : "placeholder-gray-500"
-        }`}
-        placeholder="Enter your email"
-        required
-        autoComplete="email"
-      />
-    </div>
+            <div>
+              <label
+                htmlFor="email-field"
+                className="block text-sm sm:text-base font-semibold"
+              >
+                Email
+              </label>
+              <input
+                id="email-field"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                    : "placeholder-gray-500"
+                }`}
+                placeholder="Enter your email"
+                required
+                autoComplete="email"
+              />
+            </div>
 
-    <div>
-      <label
-        htmlFor="password-field"
-        className="block text-sm sm:text-base font-semibold"
-      >
-        Password
-      </label>
-      <input
-        id="password-field"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-          darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-            : "placeholder-gray-500"
-        }`}
-        placeholder="Enter your password"
-        required
-        autoComplete="new-password"
-      />
-    </div>
+            <div>
+              <label
+                htmlFor="password-field"
+                className="block text-sm sm:text-base font-semibold"
+              >
+                Password
+              </label>
+              <input
+                id="password-field"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                    : "placeholder-gray-500"
+                }`}
+                placeholder="Enter your password"
+                required
+                autoComplete="new-password"
+              />
+            </div>
 
-    <div>
-      <label
-        htmlFor="confirm-password-field"
-        className="block text-sm sm:text-base font-semibold"
-      >
-        Re-enter Password
-      </label>
-      <input
-        id="confirm-password-field"
-        type="password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-          darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-            : "placeholder-gray-500"
-        }`}
-        placeholder="Re-enter your password"
-        required
-        autoComplete="new-password"
-      />
-    </div>
+            <div>
+              <label
+                htmlFor="confirm-password-field"
+                className="block text-sm sm:text-base font-semibold"
+              >
+                Re-enter Password
+              </label>
+              <input
+                id="confirm-password-field"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                    : "placeholder-gray-500"
+                }`}
+                placeholder="Re-enter your password"
+                required
+                autoComplete="new-password"
+              />
+            </div>
 
-    {errorMessage && (
-      <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>
-    )}
+            {errorMessage && (
+              <p className="text-red-500 text-sm sm:text-base">{errorMessage}</p>
+            )}
 
-    <button
-      type="submit"
-      className="w-full py-3 bg-green-500 text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
-    >
-      Sign Up
-    </button>
-  </form>
-</div>
+            <button
+              type="submit"
+              className="w-full py-3 bg-green-500 text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+            >
+              Sign Up
+            </button>
+          </form>
+        </div>
 
         <div className="text-center mt-4">
           <p className="text-sm sm:text-base">
@@ -237,7 +242,7 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      <div style={notificationStyle}>
+      <div style={notificationStyle} role="alert" aria-live="assertive">
         Signup successful! You can now log in.
       </div>
     </div>
