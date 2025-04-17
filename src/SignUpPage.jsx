@@ -115,16 +115,19 @@ export default function SignUpPage() {
                 Username
               </label>
               <input
-                id="username-field"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full p-3 border rounded-md text-sm sm:text-base"
-                placeholder="Enter your username"
-                required
-                autoComplete="username"
-                style={darkMode ? { color: "white" } : {}}
-              />
+  id="username-field"
+  type="text"
+  value={username}
+  onChange={(e) => setUsername(e.target.value)}
+  className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+    darkMode
+      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+      : "placeholder-gray-500"
+  }`}
+  placeholder="Enter your username"
+  required
+  autoComplete="username"
+/>
             </div>
   
             <div>
