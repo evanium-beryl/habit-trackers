@@ -27,30 +27,33 @@ export default function LoginPage() {
   };
 
   // Place this handleLogin function in your LoginPage.js
-const handleLogin = (e) => {
-  e.preventDefault();
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-
-  if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
-    setShowErrorAlert(true); // Show error alert
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+  
+    if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
+      setShowErrorAlert(true); // Show error alert
+      setTimeout(() => {
+        setShowErrorAlert(false); // Hide alert after 2 seconds
+      }, 2000);
+      return;
+    }
+  
+    localStorage.setItem("isAuthenticated", "true"); // Store login state
+    setShowAlert(true); // Show success alert
+    setEmail(""); // Clear email field
+    setPassword(""); // Clear password field
+  
+    // Force a state change after the success alert has been shown for a smooth transition
     setTimeout(() => {
-      setShowErrorAlert(false); // Hide alert after 2 seconds
+      setShowAlert(false); // Hide alert after 2 seconds
     }, 2000);
-    return;
-  }
-
-  localStorage.setItem("isAuthenticated", "true"); // Store login state
-  setShowAlert(true); // Show success alert
-  setEmail(""); // Clear email field
-  setPassword(""); // Clear password field
-
-  // Hide the success alert after 2 seconds
-  setTimeout(() => {
-    setShowAlert(false); // Hide alert after 2 seconds
-    // Now redirect to the Habit Tracker page
-    navigate("/habit-tracker");
-  }, 2500); // Delay redirection by the same amount of time as the alert visibility
-};
+  
+    // Delay redirection to ensure mobile browsers have finished rendering
+    setTimeout(() => {
+      navigate("/habit-tracker");
+    }, 2500); // Delay redirection
+  };  
 
 // Inline styles for the push notification
 const notificationStyle = {
