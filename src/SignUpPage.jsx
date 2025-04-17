@@ -7,6 +7,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showAlert, setShowAlert] = useState(false); // State for the push notification
   const navigate = useNavigate();
 
   // Read dark mode preference from localStorage on initial load
@@ -35,10 +36,30 @@ export default function SignUpPage() {
 
     // Store user data in localStorage
     localStorage.setItem("user", JSON.stringify({ username, email, password }));
-    alert("Signup successful! You can now log in.");
-    navigate("/"); // Redirect to login after signup
+    setShowAlert(true); // Show alert
+    setTimeout(() => {
+      setShowAlert(false); // Hide alert after 3 seconds
+    }, 3000);
+
+    setTimeout(() => {
+      navigate("/"); // Redirect after alert is gone
+    }, 3500); // Allow navigation after alert hides
   };
 
+  // Inline styles for the push notification
+  const notificationStyle = {
+    position: "fixed",
+    top: "20px",
+    right: showAlert ? "20px" : "-300px", // Dynamic positioning
+    backgroundColor: "#4caf50",
+    color: "white",
+    padding: "15px",
+    borderRadius: "5px",
+    transition: "right 0.5s ease-in-out",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+  };
+  
   return (
     <div
       className={`min-h-screen p-5 flex flex-col items-center ${
@@ -161,6 +182,8 @@ export default function SignUpPage() {
           </p>
         </div>
       </div>
+      {/* Push Notification */}
+      <div style={notificationStyle}>Signup successful! You can now log in.</div>
     </div>
   );
 }
