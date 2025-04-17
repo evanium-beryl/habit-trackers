@@ -207,6 +207,30 @@ export default function SignUpPage() {
             </div>
 
             <div>
+  <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
+    Password
+  </label>
+  <input
+    id="password-field"
+    ref={passwordRef}
+    type="password"
+    value={password}
+    onChange={(e) => {
+      setPassword(e.target.value);
+      handleInputChange(e);
+    }}
+    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+      darkMode
+        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+        : "placeholder-gray-500"
+    }`}
+    placeholder="Enter your password"
+    required
+    autoComplete="new-password"
+  />
+</div>
+
+<div>
   <label htmlFor="confirm-password-field" className="block text-sm sm:text-base font-semibold">
     Re-enter Password
   </label>
