@@ -39,11 +39,13 @@ export default function SignUpPage() {
       usernameRef.current.focus();
       return false;
     }
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrorMessage("A valid email is required.");
-      emailRef.current.focus();
-      return false;
-    }
+     // Updated regex to validate a valid email format
+     const emailPattern = /^[^\s@]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}$/;
+     if (!email.trim() || !emailPattern.test(email)) {
+       setErrorMessage("A valid email is required.");
+       emailRef.current.focus();
+       return false;
+     }
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
       confirmPasswordRef.current.focus();
