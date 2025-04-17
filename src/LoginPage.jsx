@@ -42,11 +42,11 @@ const handleLogin = (e) => {
 
   setTimeout(() => {
     setShowAlert(false); // Hide alert after 3 seconds
-  }, 3000);
+  }, 2000);
 
   setTimeout(() => {
     navigate("/habit-tracker"); // Redirect after alert hides
-  }, 3500); // Allow navigation after alert hides
+  }, 2500); // Allow navigation after alert hides
 };
 
 // Inline styles for the push notification

@@ -39,11 +39,11 @@ export default function SignUpPage() {
     setShowAlert(true); // Show alert
     setTimeout(() => {
       setShowAlert(false); // Hide alert after 3 seconds
-    }, 3000);
+    }, 2000);
 
     setTimeout(() => {
       navigate("/"); // Redirect after alert is gone
-    }, 3500); // Allow navigation after alert hides
+    }, 2500); // Allow navigation after alert hides
   };
 
   // Inline styles for the push notification
