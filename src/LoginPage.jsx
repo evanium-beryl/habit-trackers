@@ -6,6 +6,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showAlert, setShowAlert] = useState(false); // State for the push notification
+  const [showErrorAlert, setShowErrorAlert] = useState(false); // State for error notification
   const navigate = useNavigate();
 
   // Read dark mode preference from localStorage on initial load
@@ -31,17 +32,20 @@ const handleLogin = (e) => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
 
   if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
-    alert("Invalid credentials. Please try again.");
+    setShowErrorAlert(true); // Show error alert
+    setTimeout(() => {
+      setShowErrorAlert(false); // Hide alert after 2 seconds
+    }, 2000);
     return;
   }
 
   localStorage.setItem("isAuthenticated", "true"); // Store login state
-  setShowAlert(true); // Show alert
+  setShowAlert(true); // Show success alert
   setEmail(""); // Clear email field
   setPassword(""); // Clear password field
 
   setTimeout(() => {
-    setShowAlert(false); // Hide alert after 3 seconds
+    setShowAlert(false); // Hide alert after 2 seconds
   }, 2000);
 
   setTimeout(() => {
@@ -55,6 +59,19 @@ const notificationStyle = {
   top: "20px",
   right: showAlert ? "20px" : "-300px", // Dynamic positioning
   backgroundColor: "#4caf50",
+  color: "white",
+  padding: "15px",
+  borderRadius: "5px",
+  transition: "right 0.5s ease-in-out",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+  zIndex: 1000,
+};
+
+const errorNotificationStyle = {
+  position: "fixed",
+  top: "20px",
+  right: showErrorAlert ? "20px" : "-300px", // Dynamic positioning
+  backgroundColor: "#f44336", // Red background for error
   color: "white",
   padding: "15px",
   borderRadius: "5px",
@@ -153,6 +170,7 @@ const notificationStyle = {
       </div>
       {/* Push Notification */}
       <div style={notificationStyle}>Login successful! Welcome back.</div>
+      <div style={errorNotificationStyle}>Invalid credentials. Please try again.</div>
     </div>
   );
 }
