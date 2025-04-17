@@ -9,76 +9,72 @@ export default function LoginPage() {
   const [showErrorAlert, setShowErrorAlert] = useState(false); // State for error notification
   const navigate = useNavigate();
 
-  // Read dark mode preference from localStorage on initial load
   useEffect(() => {
     const storedDarkMode = localStorage.getItem("darkMode");
     if (storedDarkMode) {
-      setDarkMode(JSON.parse(storedDarkMode)); // Initialize darkMode based on saved preference
+      setDarkMode(JSON.parse(storedDarkMode));
     }
   }, []);
 
-  // Handle dark mode toggle
   const handleDarkModeToggle = () => {
     setDarkMode((prevMode) => {
       const newMode = !prevMode;
-      localStorage.setItem("darkMode", JSON.stringify(newMode)); // Save the new dark mode setting
+      localStorage.setItem("darkMode", JSON.stringify(newMode));
       return newMode;
     });
   };
 
-  // Place this handleLogin function in your LoginPage.js
-const handleLogin = (e) => {
-  e.preventDefault();
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const storedUser = JSON.parse(localStorage.getItem("user"));
 
-  if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
-    setShowErrorAlert(true); // Show error alert
+    if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
+      setShowErrorAlert(true);
+      setTimeout(() => {
+        setShowErrorAlert(false);
+      }, 2000);
+      return;
+    }
+
+    localStorage.setItem("isAuthenticated", "true");
+    setShowAlert(true);
+    setEmail("");
+    setPassword("");
+
     setTimeout(() => {
-      setShowErrorAlert(false); // Hide alert after 2 seconds
+      setShowAlert(false);
     }, 2000);
-    return;
-  }
 
-  localStorage.setItem("isAuthenticated", "true"); // Store login state
-  setShowAlert(true); // Show success alert
-  setEmail(""); // Clear email field
-  setPassword(""); // Clear password field
+    setTimeout(() => {
+      navigate("/habit-tracker");
+    }, 2500);
+  };
 
-  setTimeout(() => {
-    setShowAlert(false); // Hide alert after 2 seconds
-  }, 2000);
+  const notificationStyle = {
+    position: "fixed",
+    top: "20px",
+    right: showAlert ? "20px" : "-300px",
+    backgroundColor: "#4caf50",
+    color: "white",
+    padding: "15px",
+    borderRadius: "5px",
+    transition: "right 0.5s ease-in-out",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+  };
 
-  setTimeout(() => {
-    navigate("/habit-tracker"); // Redirect after alert hides
-  }, 2500); // Allow navigation after alert hides
-};
-
-// Inline styles for the push notification
-const notificationStyle = {
-  position: "fixed",
-  top: "20px",
-  right: showAlert ? "20px" : "-300px", // Dynamic positioning
-  backgroundColor: "#4caf50",
-  color: "white",
-  padding: "15px",
-  borderRadius: "5px",
-  transition: "right 0.5s ease-in-out",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  zIndex: 1000,
-};
-
-const errorNotificationStyle = {
-  position: "fixed",
-  top: "20px",
-  right: showErrorAlert ? "20px" : "-300px", // Dynamic positioning
-  backgroundColor: "#f44336", // Red background for error
-  color: "white",
-  padding: "15px",
-  borderRadius: "5px",
-  transition: "right 0.5s ease-in-out",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  zIndex: 1000,
-};
+  const errorNotificationStyle = {
+    position: "fixed",
+    top: "20px",
+    right: showErrorAlert ? "20px" : "-300px",
+    backgroundColor: "#f44336",
+    color: "white",
+    padding: "15px",
+    borderRadius: "5px",
+    transition: "right 0.5s ease-in-out",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+  };
 
   return (
     <div
@@ -89,7 +85,6 @@ const errorNotificationStyle = {
       }`}
     >
       <div className="w-full max-w-6xl">
-        {/* Header & Dark Mode Toggle */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-center">Habit Tracker</h1>
           <button
@@ -100,23 +95,21 @@ const errorNotificationStyle = {
           </button>
         </div>
 
-        {/* Write-up Below Dark Mode Toggle */}
         <p
           className="text-center text-lg italic mb-20"
           style={{ color: darkMode ? "#f9f9f9" : "#333" }}
         >
-          Stay consistent, build better habits, and track your progress effortlessly with our habit tracker.{" "}
+          Stay consistent, build better habits, and track your progress effortlessly with our habit tracker. {" "}
           <strong>Small steps, big results!</strong>
         </p>
 
-        {/* Login Form */}
         <form onSubmit={handleLogin} className="w-full max-w-sm mx-auto">
           <div className="mb-4">
             <label htmlFor="email-field" className="block text-sm font-semibold">
               Email
             </label>
             <input
-              id="email-field"  // Corrected id for email field
+              id="email-field"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -133,7 +126,7 @@ const errorNotificationStyle = {
               Password
             </label>
             <input
-              id="password-field"  // Corrected id for password field
+              id="password-field"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -155,10 +148,9 @@ const errorNotificationStyle = {
           </div>
         </form>
 
-        {/* Redirect to Sign Up Link */}
         <div className="text-center mt-4">
           <p className="text-sm">
-            Don't have an account?{" "}
+            Don’t have an account? {" "}
             <Link
               to="/signup"
               className="text-teal-500 hover:text-teal-600 font-semibold"
@@ -168,7 +160,7 @@ const errorNotificationStyle = {
           </p>
         </div>
       </div>
-      {/* Push Notification */}
+
       <div style={notificationStyle}>Login successful! Welcome back.</div>
       <div style={errorNotificationStyle}>Invalid credentials. Please try again.</div>
     </div>
