@@ -72,19 +72,40 @@ export default function SignUpPage() {
   };
 
     return (
-      <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"}`}>
-        {/* Navbar */}
-        <div className={`w-full ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"} py-4 px-6 shadow-lg`}>
-          <div className="flex justify-between items-center max-w-6xl mx-auto">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">Habit Tracker</h1>
-            <button
-              onClick={handleDarkModeToggle}
-              className="px-3 py-2 bg-gray-700 text-white rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
-            >
-              {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-            </button>
-          </div>
+      <div
+      className={`min-h-screen ${
+        darkMode
+          ? "bg-gray-900 text-white"
+          : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
+      }`}
+    >
+      {/* Navbar */}
+      <div
+        className={`w-full py-4 px-6 shadow-lg ${
+          darkMode
+            ? "bg-gray-900 text-white border-b border-gray-700"
+            : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black border-b border-gray-200"
+        }`}
+      >
+        <div className="flex justify-between items-center max-w-6xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">
+            Habit Tracker
+          </h1>
+          <button
+            onClick={handleDarkModeToggle}
+            className="px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
+            style={{
+              backgroundColor: darkMode ? "#444" : "#fff",
+              color: darkMode ? "#fff" : "#000",
+              boxShadow: darkMode
+                ? "0 2px 4px rgba(0, 0, 0, 0.6)"
+                : "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+          </button>
         </div>
+      </div>
   
         <div className="px-4">
           <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
