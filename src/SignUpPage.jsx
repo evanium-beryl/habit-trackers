@@ -149,8 +149,10 @@ export default function SignUpPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
-                darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+              className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                darkMode
+                  ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                  : "placeholder-gray-500"
               }`}
               placeholder="Enter your email"
               required
@@ -170,8 +172,10 @@ export default function SignUpPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`w-full p-3 border rounded-md text-sm sm:text-base placeholder-gray-500 ${
-                darkMode ? "text-white bg-gray-800" : "text-black bg-white"
+              className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                darkMode
+                  ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                  : "placeholder-gray-500"
               }`}
               placeholder="Enter your password"
               required
@@ -187,17 +191,19 @@ export default function SignUpPage() {
               Re-enter Password
             </label>
             <input
-  id="confirm-password-field"
-  type="password"
-  value={confirmPassword}
-  onChange={(e) => setConfirmPassword(e.target.value)}
-  className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-    darkMode ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white" : "placeholder-gray-500"
-  }`}
-  placeholder="Re-enter your password"
-  required
-  autoComplete="new-password"
-/>
+              id="confirm-password-field"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+                darkMode
+                  ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                  : "placeholder-gray-500"
+              }`}
+              placeholder="Re-enter your password"
+              required
+              autoComplete="new-password"
+            />
           </div>
 
           {errorMessage && (
