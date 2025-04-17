@@ -5,6 +5,7 @@ export default function LoginPage() {
   const [darkMode, setDarkMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showAlert, setShowAlert] = useState(false); // State for the push notification
   const navigate = useNavigate();
 
   // Read dark mode preference from localStorage on initial load
@@ -35,9 +36,31 @@ const handleLogin = (e) => {
   }
 
   localStorage.setItem("isAuthenticated", "true"); // Store login state
-  setEmail("");
-  setPassword("");
-  navigate("/habit-tracker"); // Redirect to Habit Tracker
+  setShowAlert(true); // Show alert
+  setEmail(""); // Clear email field
+  setPassword(""); // Clear password field
+
+  setTimeout(() => {
+    setShowAlert(false); // Hide alert after 3 seconds
+  }, 3000);
+
+  setTimeout(() => {
+    navigate("/habit-tracker"); // Redirect after alert hides
+  }, 3500); // Allow navigation after alert hides
+};
+
+// Inline styles for the push notification
+const notificationStyle = {
+  position: "fixed",
+  top: "20px",
+  right: showAlert ? "20px" : "-300px", // Dynamic positioning
+  backgroundColor: "#4caf50",
+  color: "white",
+  padding: "15px",
+  borderRadius: "5px",
+  transition: "right 0.5s ease-in-out",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+  zIndex: 1000,
 };
 
   return (
@@ -128,6 +151,8 @@ const handleLogin = (e) => {
           </p>
         </div>
       </div>
+      {/* Push Notification */}
+      <div style={notificationStyle}>Login successful! Welcome back.</div>
     </div>
   );
 }
