@@ -92,7 +92,7 @@ export default function SignUpPage() {
         {/* Sign-up Form */}
         <form onSubmit={handleSignUp} className="w-full max-w-sm mx-auto">
   <div className="mb-4">
-    <label htmlFor="username" className="block text-sm font-semibold">
+    <label htmlFor="username-field" className="block text-sm font-semibold">
       Username
     </label>
     <input
@@ -109,7 +109,7 @@ export default function SignUpPage() {
   </div>
 
   <div className="mb-4">
-    <label htmlFor="email" className="block text-sm font-semibold">
+    <label htmlFor="email-field" className="block text-sm font-semibold">
       Email
     </label>
     <input
@@ -126,7 +126,7 @@ export default function SignUpPage() {
   </div>
 
   <div className="mb-4">
-    <label htmlFor="password" className="block text-sm font-semibold">
+    <label htmlFor="password-field" className="block text-sm font-semibold">
       Password
     </label>
     <input
@@ -143,7 +143,7 @@ export default function SignUpPage() {
   </div>
 
   <div className="mb-4">
-    <label htmlFor="confirmPassword" className="block text-sm font-semibold">
+    <label htmlFor="confirm-password-field" className="block text-sm font-semibold">
       Re-enter Password
     </label>
     <input

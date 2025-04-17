@@ -111,49 +111,49 @@ const errorNotificationStyle = {
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="w-full max-w-sm mx-auto">
-  <div className="mb-4">
-    <label htmlFor="email" className="block text-sm font-semibold">
-      Email
-    </label>
-    <input
-      id="email-field"  // Unique id for the email field
-      type="email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Enter your email"
-      required
-      autocomplete="email"
-      style={darkMode ? { color: "white" } : {}}
-    />
-  </div>
+          <div className="mb-4">
+            <label htmlFor="email-field" className="block text-sm font-semibold">
+              Email
+            </label>
+            <input
+              id="email-field"  // Corrected id for email field
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 mt-2 border rounded"
+              placeholder="Enter your email"
+              required
+              autoComplete="email"
+              style={darkMode ? { color: "white" } : {}}
+            />
+          </div>
 
-  <div className="mb-4">
-    <label htmlFor="password" className="block text-sm font-semibold">
-      Password
-    </label>
-    <input
-      id="password-field"  // Unique id for the password field
-      type="password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="w-full p-2 mt-2 border rounded"
-      placeholder="Enter your password"
-      required
-      autocomplete="current-password"
-      style={darkMode ? { color: "white" } : {}}
-    />
-  </div>
+          <div className="mb-4">
+            <label htmlFor="password-field" className="block text-sm font-semibold">
+              Password
+            </label>
+            <input
+              id="password-field"  // Corrected id for password field
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 mt-2 border rounded"
+              placeholder="Enter your password"
+              required
+              autoComplete="current-password"
+              style={darkMode ? { color: "white" } : {}}
+            />
+          </div>
 
-  <div className="flex justify-center">
-    <button
-      type="submit"
-      className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
-    >
-      Login
-    </button>
-  </div>
-</form>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+            >
+              Login
+            </button>
+          </div>
+        </form>
 
         {/* Redirect to Sign Up Link */}
         <div className="text-center mt-4">
