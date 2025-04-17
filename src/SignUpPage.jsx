@@ -199,58 +199,36 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
-                Password
-              </label>
-              <input
-                id="password-field"
-                ref={passwordRef}
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  handleInputChange(e);
-                }}
-                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-                  darkMode
-                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                    : "placeholder-gray-500"
-                }`}
-                placeholder="Enter your password"
-                required
-                autoComplete="new-password"
-              />
-            </div>
+  <label htmlFor="confirm-password-field" className="block text-sm sm:text-base font-semibold">
+    Re-enter Password
+  </label>
+  <input
+    id="confirm-password-field"
+    ref={confirmPasswordRef}
+    type="password"
+    value={confirmPassword}
+    onChange={(e) => {
+      setConfirmPassword(e.target.value);
+      handleInputChange(e);
+    }}
+    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
+      darkMode
+        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+        : "placeholder-gray-500"
+    }`}
+    placeholder="Re-enter your password"
+    required
+    autoComplete="new-password"
+  />
+</div>
 
-            <div>
-              <label htmlFor="confirm-password-field" className="block text-sm sm:text-base font-semibold">
-                Re-enter Password
-              </label>
-              <input
-                id="confirm-password-field"
-                ref={confirmPasswordRef}
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  handleInputChange(e);
-                }}
-                className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-                  darkMode
-                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                    : "placeholder-gray-500"
-                }`}
-                placeholder="Re-enter your password"
-                required
-                autoComplete="new-password"
-              />
-            </div>
-
-            <p className={`${passwordMatchStyle} text-sm mt-1`}>
+{/* Password match visual feedback */}
+<p className={`${passwordMatchStyle} text-sm mt-1`}>
   {password && confirmPassword && (password === confirmPassword 
     ? "Passwords match" 
     : "Passwords do not match")}
 </p>
+
             <button
               type="submit"
               className={`w-full py-3 ${isSubmitting ? 'bg-gray-400' : 'bg-green-500'} text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105`}
