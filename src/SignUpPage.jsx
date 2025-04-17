@@ -80,17 +80,17 @@ export default function SignUpPage() {
       }`}
     >
       <div className="w-full max-w-lg lg:max-w-xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">
-            Habit Tracker
-          </h1>
-          <button
-            onClick={handleDarkModeToggle}
-            className="px-3 py-2 sm:px-4 sm:py-3 bg-gray-700 text-white rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
-          >
-            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-          </button>
-        </div>
+      <div className="flex justify-between items-center mb-6">
+  <h1 className="text-3xl sm:text-4xl font-bold text-center tracking-wide">
+    Habit Tracker
+  </h1>
+  <button
+    onClick={handleDarkModeToggle}
+    className="ml-4 px-3 py-2 sm:px-4 sm:py-3 bg-gray-700 text-white rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
+  >
+    {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+  </button>
+</div>
 
         <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
           Stay consistent, build better habits, and track your progress effortlessly.{" "}
