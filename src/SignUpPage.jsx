@@ -33,66 +33,64 @@ export default function SignUpPage() {
     });
   };
 
-  const validateForm = () => {
-    if (!username.trim()) {
-      setErrorMessage("Username is required.");
-      usernameRef.current.focus();
-      return false;
-    }
-  
-    // Updated regex to validate a valid email format
-    const emailPattern = /^[^\s@]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}$/;
-    if (!email.trim() || !emailPattern.test(email)) {
-      setErrorMessage("A valid email is required.");
-      emailRef.current.focus();
-      return false;
-    }
-  
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      confirmPasswordRef.current.focus();
-      return false;
-    }
-  
-    // Password validation - Ensure it has uppercase, lowercase, number, and special char
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordPattern.test(password)) {
-      setErrorMessage("Password must be at least 8 characters, include uppercase, lowercase, a number, and a special character.");
-      passwordRef.current.focus();
-      return false;
-    }
-  
-    const existingUser = JSON.parse(localStorage.getItem("user"));
-    if (existingUser && existingUser.email === email) {
-      setErrorMessage("An account with this email already exists.");
-      emailRef.current.focus();
-      return false;
-    }
-  
-    return true;
-  };
-  
   const handleSignUp = (e) => {
     e.preventDefault(); // Prevent default form submission
-  
+
     if (!validateForm()) return; // If validation fails, don't proceed
-  
+
     setIsSubmitting(true); // Start loading
     setErrorMessage(""); // Clear previous errors
-  
+
     // Save user data
     localStorage.setItem("user", JSON.stringify({ username, email, password }));
-  
+
     // Show success alert
     setShowAlert(true);
-  
+
     // Redirect after a short delay
     setTimeout(() => {
       setShowAlert(false);
       setIsSubmitting(false);
       navigate("/"); // Redirect to the login page
     }, 2500); // Delay for the success alert
-  };  
+};
+
+const validateForm = () => {
+    if (!username.trim()) {
+      setErrorMessage("Username is required.");
+      usernameRef.current.focus();
+      return false;
+    }
+
+    const emailPattern = /^[^\s@]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}$/;
+    if (!email.trim() || !emailPattern.test(email)) {
+      setErrorMessage("A valid email is required.");
+      emailRef.current.focus();
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      confirmPasswordRef.current.focus();
+      return false;
+    }
+
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordPattern.test(password)) {
+      setErrorMessage("Password must be at least 8 characters, include uppercase, lowercase, a number, and a special character.");
+      passwordRef.current.focus();
+      return false;
+    }
+
+    const existingUser = JSON.parse(localStorage.getItem("user"));
+    if (existingUser && existingUser.email === email) {
+      setErrorMessage("An account with this email already exists.");
+      emailRef.current.focus();
+      return false;
+    }
+
+    return true;
+};
 
   const notificationStyle = {
     position: "fixed",
