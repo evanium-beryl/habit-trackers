@@ -92,18 +92,15 @@ export default function SignUpPage() {
             Habit Tracker
           </h1>
           <button
-            onClick={handleDarkModeToggle}
-            className="px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base"
-            style={{
-              backgroundColor: darkMode ? "#444" : "#fff",
-              color: darkMode ? "#fff" : "#000",
-              boxShadow: darkMode
-                ? "0 2px 4px rgba(0, 0, 0, 0.6)"
-                : "0 2px 4px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-          </button>
+  onClick={handleDarkModeToggle}
+  className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base ${
+    darkMode
+      ? "bg-gray-700 text-white hover:bg-gray-600"
+      : "bg-gradient-to-r from-blue-200 via-yellow-200 to-white text-black hover:from-blue-300 hover:via-yellow-300"
+  }`}
+>
+  {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+</button>
         </div>
       </div>
   
