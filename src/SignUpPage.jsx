@@ -111,13 +111,13 @@ export default function SignUpPage() {
         </p>
 
         <div
-  className={`p-6 border rounded-lg shadow-md max-w-md mx-auto ${
-    darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-300"
+  className={`p-8 border-2 rounded-lg shadow-lg max-w-md mx-auto ${
+    darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-300"
   }`}
 >
   <form
     onSubmit={handleSignUp}
-    className="space-y-4 sm:space-y-6"
+    className="space-y-6"
   >
     <div>
       <label
@@ -133,7 +133,7 @@ export default function SignUpPage() {
         onChange={(e) => setUsername(e.target.value)}
         className={`w-full p-3 border rounded-md text-sm sm:text-base ${
           darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+            ? "bg-gray-900 border-gray-700 placeholder-gray-400 text-white"
             : "placeholder-gray-500"
         }`}
         placeholder="Enter your username"
@@ -156,7 +156,7 @@ export default function SignUpPage() {
         onChange={(e) => setEmail(e.target.value)}
         className={`w-full p-3 border rounded-md text-sm sm:text-base ${
           darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+            ? "bg-gray-900 border-gray-700 placeholder-gray-400 text-white"
             : "placeholder-gray-500"
         }`}
         placeholder="Enter your email"
@@ -179,7 +179,7 @@ export default function SignUpPage() {
         onChange={(e) => setPassword(e.target.value)}
         className={`w-full p-3 border rounded-md text-sm sm:text-base ${
           darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+            ? "bg-gray-900 border-gray-700 placeholder-gray-400 text-white"
             : "placeholder-gray-500"
         }`}
         placeholder="Enter your password"
@@ -202,7 +202,7 @@ export default function SignUpPage() {
         onChange={(e) => setConfirmPassword(e.target.value)}
         className={`w-full p-3 border rounded-md text-sm sm:text-base ${
           darkMode
-            ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+            ? "bg-gray-900 border-gray-700 placeholder-gray-400 text-white"
             : "placeholder-gray-500"
         }`}
         placeholder="Re-enter your password"
