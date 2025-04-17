@@ -44,13 +44,12 @@ const handleLogin = (e) => {
   setEmail(""); // Clear email field
   setPassword(""); // Clear password field
 
+  // Hide the success alert after 2 seconds
   setTimeout(() => {
     setShowAlert(false); // Hide alert after 2 seconds
-  }, 2000);
-
-  setTimeout(() => {
-    navigate("/habit-tracker"); // Redirect after alert hides
-  }, 2500); // Allow navigation after alert hides
+    // Now redirect to the Habit Tracker page
+    navigate("/habit-tracker");
+  }, 2500); // Delay redirection by the same amount of time as the alert visibility
 };
 
 // Inline styles for the push notification
