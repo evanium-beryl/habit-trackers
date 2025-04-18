@@ -15,7 +15,6 @@ export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Refs for focus management
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -37,40 +36,26 @@ export default function SignUpPage() {
   };
 
   const handleSignUp = (e) => {
-    e.preventDefault(); // Prevent default form submission
-
-    // Validate form before submitting
+    e.preventDefault();
     if (!validateForm()) return;
-
-    setIsSubmitting(true); // Start loading
-    setErrorMessage(""); // Clear previous errors
-
-    // Save user data
+    setIsSubmitting(true);
+    setErrorMessage("");
     localStorage.setItem("user", JSON.stringify({ username, email, password }));
-
-    // Show success alert
     setShowAlert(true);
-
-    // Redirect after a short delay
     setTimeout(() => {
       setShowAlert(false);
       setIsSubmitting(false);
-      navigate("/"); // Redirect to the login page
-    }, 2500); // Delay for the success alert
-};
+      navigate("/");
+    }, 2500);
+  };
 
-const validateForm = () => {
-    // Reset all error messages and highlight for revalidation
-    setErrorMessage(""); 
-
-    // Validate username
+  const validateForm = () => {
+    setErrorMessage("");
     if (!username.trim()) {
-        setErrorMessage("Username is required.");
-        usernameRef.current.focus();
-        return false;
+      setErrorMessage("Username is required.");
+      usernameRef.current.focus();
+      return false;
     }
-
-    // Validate email format
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
       setErrorMessage("Email is required.");
@@ -81,8 +66,6 @@ const validateForm = () => {
       emailRef.current.focus();
       return false;
     }
-
-    // Validate password
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$/;
     if (!password) {
       setErrorMessage("Password is required.");
@@ -93,41 +76,36 @@ const validateForm = () => {
       passwordRef.current.focus();
       return false;
     }
-
-    // Validate confirm password
     if (!confirmPassword) {
-        setErrorMessage("Please confirm your password.");
-        confirmPasswordRef.current.focus();
-        return false;
+      setErrorMessage("Please confirm your password.");
+      confirmPasswordRef.current.focus();
+      return false;
     } else if (password !== confirmPassword) {
-        setErrorMessage("Passwords do not match.");
-        confirmPasswordRef.current.focus();
-        return false;
+      setErrorMessage("Passwords do not match.");
+      confirmPasswordRef.current.focus();
+      return false;
     }
-
-    // Check if user already exists
     const existingUser = JSON.parse(localStorage.getItem("user"));
     if (existingUser && existingUser.email === email) {
-        setErrorMessage("An account with this email already exists.");
-        emailRef.current.focus();
-        return false;
+      setErrorMessage("An account with this email already exists.");
+      emailRef.current.focus();
+      return false;
     }
-
     return true;
-};
+  };
 
-const handleInputChange = (e, field) => {
-  const value = e.target.value;
-  if (field === "username" && errorMessage.includes("Username")) {
-    setErrorMessage("");
-  } else if (field === "email" && errorMessage.includes("Email")) {
-    setErrorMessage("");
-  } else if (field === "password" && errorMessage.includes("Password")) {
-    setErrorMessage("");
-  } else if (field === "confirmPassword" && errorMessage.includes("Passwords")) {
-    setErrorMessage("");
-  }
-};
+  const handleInputChange = (e, field) => {
+    const value = e.target.value;
+    if (field === "username" && errorMessage.includes("Username")) {
+      setErrorMessage("");
+    } else if (field === "email" && errorMessage.includes("Email")) {
+      setErrorMessage("");
+    } else if (field === "password" && errorMessage.includes("Password")) {
+      setErrorMessage("");
+    } else if (field === "confirmPassword" && errorMessage.includes("Passwords")) {
+      setErrorMessage("");
+    }
+  };
 
   const notificationStyle = {
     position: "fixed",
@@ -147,11 +125,12 @@ const handleInputChange = (e, field) => {
 
   return (
     <div
-  className={`min-h-screen flex flex-col items-center justify-center ${
-    darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
-  }`}
->
-      {/* Navbar */}
+      className={`min-h-screen flex flex-col items-center justify-center ${
+        darkMode
+          ? "bg-gray-900 text-white"
+          : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
+      }`}
+    >
       <div
         className={`w-full py-4 px-6 shadow-lg ${
           darkMode
@@ -160,90 +139,89 @@ const handleInputChange = (e, field) => {
         }`}
       >
         <div className="flex justify-between items-center max-w-6xl mx-auto">
-      <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide">Habit Tracker</h1>
-      <button
-        onClick={handleDarkModeToggle}
-        className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base lg:text-lg ${
-          darkMode
-            ? "bg-gray-700 text-white hover:bg-gray-600"
-            : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
-        }`}
-      >
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide">Habit Tracker</h1>
+          <button
+            onClick={handleDarkModeToggle}
+            className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base lg:text-lg ${
+              darkMode
+                ? "bg-gray-700 text-white hover:bg-gray-600"
+                : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
+            }`}
+          >
             {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
           </button>
         </div>
       </div>
 
-      <div className="px-4 w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl mt-10">
-        <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
-          Stay consistent, build better habits, and track your progress effortlessly.{" "}
-          <strong>Small steps, big results!</strong>
+      <div className="px-4 w-full max-w-lg mt-10 container mx-auto">
+        <p className="text-center text-base italic mb-10">
+          Stay consistent, build better habits, and track your progress effortlessly. <strong>Small steps, big results!</strong>
         </p>
 
         <div
-      className={`p-6 rounded-lg shadow-md ${
-        darkMode
-          ? "bg-gray-900 border border-gray-700"
-          : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
-      }`}
-    >
-          <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-6">
-          <div>
-  <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
-    Username
-  </label>
-  <input
-    id="username-field"
-    ref={usernameRef}
-    type="text"
-    value={username}
-    onChange={(e) => {
-      setUsername(e.target.value);
-      handleInputChange(e, "username");
-    }}
-    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-      darkMode
-        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-        : "placeholder-gray-500"
-    } ${errorMessage.includes("Username") ? "border-red-500" : ""}`}
-    placeholder="Enter your username"
-    required
-    autoComplete="username"
-  />
-  {errorMessage.includes("Username") && (
-    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
-  )}
-</div>
+          className={`p-6 rounded-lg shadow-md ${
+            darkMode
+              ? "bg-gray-900 border border-gray-700"
+              : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
+          }`}
+        >
+          <form onSubmit={handleSignUp} className="space-y-6">
+            <div>
+              <label htmlFor="username-field" className="block text-base font-semibold">
+                Username
+              </label>
+              <input
+                id="username-field"
+                ref={usernameRef}
+                type="text"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  handleInputChange(e, "username");
+                }}
+                className={`box-border w-full h-12 px-4 border rounded-md text-base ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                    : "placeholder-gray-500"
+                } ${errorMessage.includes("Username") ? "border-red-500" : ""}`}
+                placeholder="Enter your username"
+                required
+                autoComplete="username"
+              />
+              <p className="h-4 text-xs mt-1 text-red-500">
+                {errorMessage.includes("Username") ? errorMessage : ""}
+              </p>
+            </div>
 
-<div>
-  <label htmlFor="email-field" className="block text-sm sm:text-base font-semibold">
-    Email
-  </label>
-  <input
-    id="email-field"
-    ref={emailRef}
-    type="email"
-    value={email}
-    onChange={(e) => {
-      setEmail(e.target.value);
-      handleInputChange(e, "email");
-    }}
-    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-      darkMode
-        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-        : "placeholder-gray-500"
-    } ${errorMessage.includes("Email") ? "border-red-500" : ""}`}
-    placeholder="Enter your email"
-    required
-    autoComplete="email"
-  />
-  {errorMessage.includes("Email") && (
-    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
-  )}
-</div>
+            <div>
+              <label htmlFor="email-field" className="block text-base font-semibold">
+                Email
+              </label>
+              <input
+                id="email-field"
+                ref={emailRef}
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  handleInputChange(e, "email");
+                }}
+                className={`box-border w-full h-12 px-4 border rounded-md text-base ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                    : "placeholder-gray-500"
+                } ${errorMessage.includes("Email") ? "border-red-500" : ""}`}
+                placeholder="Enter your email"
+                required
+                autoComplete="email"
+              />
+              <p className="h-4 text-xs mt-1 text-red-500">
+                {errorMessage.includes("Email") ? errorMessage : ""}
+              </p>
+            </div>
 
-<div>
-              <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
+            <div>
+              <label htmlFor="password-field" className="block text-base font-semibold">
                 Password
               </label>
               <div className="relative">
@@ -253,7 +231,7 @@ const handleInputChange = (e, field) => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full p-3 border rounded-md pr-10 text-sm sm:text-base ${
+                  className={`box-border w-full h-12 px-4 border rounded-md pr-10 text-base ${
                     darkMode
                       ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
                       : "placeholder-gray-500"
@@ -265,23 +243,16 @@ const handleInputChange = (e, field) => {
                   className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
+                  {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                 </div>
               </div>
-              {errorMessage.includes("Password") && (
-                <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
-              )}
+              <p className="h-4 text-xs mt-1 text-red-500">
+                {errorMessage.includes("Password") ? errorMessage : ""}
+              </p>
             </div>
 
             <div>
-              <label
-                htmlFor="confirm-password-field"
-                className="block text-sm sm:text-base font-semibold"
-              >
+              <label htmlFor="confirm-password-field" className="block text-base font-semibold">
                 Re-enter Password
               </label>
               <div className="relative">
@@ -291,7 +262,7 @@ const handleInputChange = (e, field) => {
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full p-3 border rounded-md pr-10 text-sm sm:text-base ${
+                  className={`box-border w-full h-12 px-4 border rounded-md pr-10 text-base ${
                     darkMode
                       ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
                       : "placeholder-gray-500"
@@ -303,28 +274,21 @@ const handleInputChange = (e, field) => {
                   className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                 >
-                  {showConfirmPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
+                  {showConfirmPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                 </div>
               </div>
-              {errorMessage.includes("Passwords") && (
-                <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
-              )}
+              <p className="h-4 text-xs mt-1 text-red-500">
+                {errorMessage.includes("Passwords") ? errorMessage : ""}
+              </p>
             </div>
 
-{/* Password match visual feedback */}
-<p className={`${passwordMatchStyle} text-sm mt-1`}>
-  {password && confirmPassword && (password === confirmPassword 
-    ? "Passwords match" 
-    : "Passwords do not match")}
-</p>
+            <p className={`${passwordMatchStyle} text-sm mt-1`}>
+              {password && confirmPassword && (password === confirmPassword ? "Passwords match" : "Passwords do not match")}
+            </p>
 
             <button
               type="submit"
-              className={`w-full py-3 ${isSubmitting ? 'bg-gray-400' : 'bg-green-500'} text-white text-sm sm:text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105`}
+              className={`w-full py-3 ${isSubmitting ? "bg-gray-400" : "bg-green-500"} text-white text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105`}
               disabled={isSubmitting}
             >
               {isSubmitting ? "Signing Up..." : "Sign Up"}
@@ -333,11 +297,8 @@ const handleInputChange = (e, field) => {
         </div>
 
         <div className="text-center mt-4">
-          <p className="text-sm sm:text-base">
-            Already have an account?{" "}
-            <Link to="/" className="text-teal-500 hover:text-teal-600 font-semibold">
-              Login here
-            </Link>
+          <p className="text-base">
+            Already have an account? <Link to="/" className="text-teal-500 hover:text-teal-600 font-semibold">Login here</Link>
           </p>
         </div>
       </div>
