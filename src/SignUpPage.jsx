@@ -147,10 +147,10 @@ const handleInputChange = (e, field) => {
 
   return (
     <div
-      className={`min-h-screen ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
-      }`}
-    >
+  className={`min-h-screen flex flex-col items-center justify-center ${
+    darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
+  }`}
+>
       {/* Navbar */}
       <div
         className={`w-full py-4 px-6 shadow-lg ${
@@ -160,33 +160,33 @@ const handleInputChange = (e, field) => {
         }`}
       >
         <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">Habit Tracker</h1>
-          <button
-            onClick={handleDarkModeToggle}
-            className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base ${
-              darkMode
-                ? "bg-gray-700 text-white hover:bg-gray-600"
-                : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
-            }`}
-          >
+      <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide">Habit Tracker</h1>
+      <button
+        onClick={handleDarkModeToggle}
+        className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base lg:text-lg ${
+          darkMode
+            ? "bg-gray-700 text-white hover:bg-gray-600"
+            : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
+        }`}
+      >
             {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
           </button>
         </div>
       </div>
 
-      <div className="px-4 mt-10">
+      <div className="px-4 w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl mt-10">
         <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
           Stay consistent, build better habits, and track your progress effortlessly.{" "}
           <strong>Small steps, big results!</strong>
         </p>
 
         <div
-          className={`p-6 rounded-lg shadow-md max-w-md mx-auto ${
-            darkMode
-              ? "bg-gray-900 border border-gray-700"
-              : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
-          }`}
-        >
+      className={`p-6 rounded-lg shadow-md ${
+        darkMode
+          ? "bg-gray-900 border border-gray-700"
+          : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
+      }`}
+    >
           <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-6">
           <div>
   <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
