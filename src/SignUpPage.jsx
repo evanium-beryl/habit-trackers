@@ -159,13 +159,15 @@ export default function SignUpPage() {
         </p>
 
         <div
-          className={`p-6 rounded-lg shadow-md ${
-            darkMode
-              ? "bg-gray-900 border border-gray-700"
-              : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
-          }`}
-        >
-          <form onSubmit={handleSignUp} className="space-y-6">
+  className={`relative p-6 rounded-xl overflow-hidden backdrop-blur-md ${
+    darkMode
+      ? "bg-gray-800/30 border border-cyan-500 text-white"
+      : "bg-white/20 border border-cyan-400 text-black"
+  }`}
+>
+  <div className="absolute inset-0 rounded-xl z-0 animate-neon-glow pointer-events-none"></div>
+  <form className="relative z-10" onSubmit={handleSignUp} className="space-y-4">
+
             <div>
               <label htmlFor="username-field" className="block text-base font-semibold">
                 Username
