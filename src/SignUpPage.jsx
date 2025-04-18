@@ -125,7 +125,7 @@ export default function SignUpPage() {
 
   return (
     <div
-      className={`min-h-screen flex flex-col items-center justify-center ${
+      className={`min-h-[100dvh] flex flex-col items-center justify-center ${
         darkMode
           ? "bg-gray-900 text-white"
           : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
