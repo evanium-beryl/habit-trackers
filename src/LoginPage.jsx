@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
 
 export default function LoginPage() {
   const [darkMode, setDarkMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const [showAlert, setShowAlert] = useState(false); // State for the push notification
   const [showErrorAlert, setShowErrorAlert] = useState(false); // State for error notification
   const navigate = useNavigate();
@@ -50,6 +52,11 @@ export default function LoginPage() {
       setShowAlert(false); // Hide alert after 2 seconds
     }, 2000);
   };  
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
 // Inline styles for the push notification
 const notificationStyle = {
@@ -129,25 +136,38 @@ const errorNotificationStyle = {
 />
   </div>
 
-  <div className="mb-4">
-    <label htmlFor="password-field" className="block text-sm font-semibold">
-      Password
-    </label>
-    <input
-  id="password-field" // Unique id for password field
-  type="password"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  className={`w-full p-2 mt-2 border rounded ${
-    darkMode
-      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-      : "placeholder-gray-500"
-  }`}
-  placeholder="Enter your password"
-  required
-  autoComplete="current-password"
-/>
-  </div>
+  <div className="mb-4 relative">
+            <label htmlFor="password-field" className="block text-sm font-semibold">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password-field"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full p-2 mt-2 border rounded ${
+                  darkMode
+                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                    : "placeholder-gray-500"
+                }`}
+                placeholder="Enter your password"
+                required
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute top-2/4 right-3 transform -translate-y-2/4 text-gray-600 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOffIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+          </div>
 
   <div className="flex justify-center">
     <button
