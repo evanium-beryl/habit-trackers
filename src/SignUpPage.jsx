@@ -147,36 +147,32 @@ const handleInputChange = (e, field) => {
 
   return (
     <div
-  className={`min-h-screen ${
-    darkMode
-      ? "bg-gray-900 text-white"
-      : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
-  } flex flex-col`}
->
-  {/* Navbar */}
-  <div
-    className={`w-full py-4 px-6 shadow-lg ${
-      darkMode
-        ? "bg-gray-900 text-white border-b border-gray-700"
-        : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black border-b border-gray-200"
-    }`}
-  >
-    <div className="flex justify-between items-center max-w-6xl mx-auto">
-      <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">
-        Habit Tracker
-      </h1>
-      <button
-        onClick={handleDarkModeToggle}
-        className={`px-2 sm:px-3 py-2 rounded-md text-sm sm:text-base ${
+      className={`min-h-screen ${
+        darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
+      }`}
+    >
+      {/* Navbar */}
+      <div
+        className={`w-full py-4 px-6 shadow-lg ${
           darkMode
-            ? "bg-gray-700 hover:bg-gray-600 text-white"
-            : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white hover:from-blue-200 hover:via-yellow-300"
+            ? "bg-gray-900 text-white border-b border-gray-700"
+            : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black border-b border-gray-200"
         }`}
       >
-        {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-      </button>
-    </div>
-  </div>
+        <div className="flex justify-between items-center max-w-6xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">Habit Tracker</h1>
+          <button
+            onClick={handleDarkModeToggle}
+            className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base ${
+              darkMode
+                ? "bg-gray-700 text-white hover:bg-gray-600"
+                : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
+            }`}
+          >
+            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+          </button>
+        </div>
+      </div>
 
       <div className="px-4 mt-10">
         <p className="text-center text-sm sm:text-base md:text-lg italic mb-10">
@@ -184,14 +180,13 @@ const handleInputChange = (e, field) => {
           <strong>Small steps, big results!</strong>
         </p>
 
-        <div className="flex-grow px-4 mt-10 flex items-center justify-center">
-  <div
-    className={`p-6 rounded-lg shadow-md w-full max-w-xl mx-auto ${
-      darkMode
-        ? "bg-gray-900 border border-gray-700"
-        : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
-    }`}
-  >
+        <div
+          className={`p-6 rounded-lg shadow-md max-w-md mx-auto ${
+            darkMode
+              ? "bg-gray-900 border border-gray-700"
+              : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
+          }`}
+        >
           <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-6">
           <div>
   <label htmlFor="username-field" className="block text-sm sm:text-base font-semibold">
@@ -335,7 +330,6 @@ const handleInputChange = (e, field) => {
               {isSubmitting ? "Signing Up..." : "Sign Up"}
             </button>
           </form>
-          </div>
         </div>
 
         <div className="text-center mt-4">
