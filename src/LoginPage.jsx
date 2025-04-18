@@ -28,11 +28,11 @@ export default function LoginPage() {
     });
   };
 
-  // Place this handleLogin function in your LoginPage.js
+  // Handle login function
   const handleLogin = (e) => {
     e.preventDefault();
     const storedUser = JSON.parse(localStorage.getItem("user"));
-  
+
     if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
       setShowErrorAlert(true); // Show error alert
       setTimeout(() => {
@@ -40,50 +40,50 @@ export default function LoginPage() {
       }, 2000);
       return;
     }
-  
+
     localStorage.setItem("isAuthenticated", "true"); // Store login state
     setShowAlert(true); // Show success alert
     setEmail(""); // Clear email field
     setPassword(""); // Clear password field
-  
+
     navigate("/habit-tracker"); // Redirect immediately
-  
+
     setTimeout(() => {
       setShowAlert(false); // Hide alert after 2 seconds
     }, 2000);
-  };  
+  };
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
-// Inline styles for the push notification
-const notificationStyle = {
-  position: "fixed",
-  top: "20px",
-  right: showAlert ? "20px" : "-300px", // Dynamic positioning
-  backgroundColor: "#4caf50",
-  color: "white",
-  padding: "15px",
-  borderRadius: "5px",
-  transition: "right 0.5s ease-in-out",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  zIndex: 1000,
-};
+  // Inline styles for the push notification
+  const notificationStyle = {
+    position: "fixed",
+    top: "20px",
+    right: showAlert ? "20px" : "-300px",
+    backgroundColor: "#4caf50",
+    color: "white",
+    padding: "15px",
+    borderRadius: "5px",
+    transition: "right 0.5s ease-in-out",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+  };
 
-const errorNotificationStyle = {
-  position: "fixed",
-  top: "20px",
-  right: showErrorAlert ? "20px" : "-300px", // Dynamic positioning
-  backgroundColor: "#f44336", // Red background for error
-  color: "white",
-  padding: "15px",
-  borderRadius: "5px",
-  transition: "right 0.5s ease-in-out",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  zIndex: 1000,
-};
+  const errorNotificationStyle = {
+    position: "fixed",
+    top: "20px",
+    right: showErrorAlert ? "20px" : "-300px",
+    backgroundColor: "#f44336",
+    color: "white",
+    padding: "15px",
+    borderRadius: "5px",
+    transition: "right 0.5s ease-in-out",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+  };
 
   return (
     <div
@@ -116,27 +116,27 @@ const errorNotificationStyle = {
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="w-full max-w-sm mx-auto">
-  <div className="mb-4">
-    <label htmlFor="email-field" className="block text-sm font-semibold">
-      Email
-    </label>
-    <input
-  id="email-field" // Unique id for email field
-  type="email"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  className={`w-full p-2 mt-2 border rounded ${
-    darkMode
-      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-      : "placeholder-gray-500"
-  }`}
-  placeholder="Enter your email"
-  required
-  autoComplete="email"
-/>
-  </div>
+          <div className="mb-4">
+            <label htmlFor="email-field" className="block text-sm font-semibold">
+              Email
+            </label>
+            <input
+              id="email-field"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full p-2 mt-2 border rounded ${
+                darkMode
+                  ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                  : "placeholder-gray-500"
+              }`}
+              placeholder="Enter your email"
+              required
+              autoComplete="email"
+            />
+          </div>
 
-  <div className="mb-4 relative">
+          <div className="mb-4 relative">
             <label htmlFor="password-field" className="block text-sm font-semibold">
               Password
             </label>
@@ -169,15 +169,15 @@ const errorNotificationStyle = {
             </div>
           </div>
 
-  <div className="flex justify-center">
-    <button
-      type="submit"
-      className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
-    >
-      Login
-    </button>
-  </div>
-</form>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
+            >
+              Login
+            </button>
+          </div>
+        </form>
 
         {/* Redirect to Sign Up Link */}
         <div className="text-center mt-4">
