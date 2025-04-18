@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export default function LoginPage() {
   const [darkMode, setDarkMode] = useState(false);
@@ -137,37 +137,36 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-4 relative">
-            <label htmlFor="password-field" className="block text-sm font-semibold">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password-field"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`w-full p-2 mt-2 border rounded ${
-                  darkMode
-                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                    : "placeholder-gray-500"
-                }`}
-                placeholder="Enter your password"
-                required
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute top-2/4 right-3 transform -translate-y-2/4 text-gray-600 focus:outline-none"
-              >
-                {showPassword ? (
-                  <EyeOffIcon className="h-5 w-5" />
-                ) : (
-                  <EyeIcon className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-          </div>
+  <label htmlFor="password-field" className="block text-sm font-semibold">
+    Password
+  </label>
+  <div className="relative">
+    <input
+      id="password-field"
+      type={showPassword ? "text" : "password"}
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      className={`w-full p-2 mt-2 border rounded pr-10 ${
+        darkMode
+          ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+          : "placeholder-gray-500"
+      }`}
+      placeholder="Enter your password"
+      required
+      autoComplete="current-password"
+    />
+    <div
+      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+      onClick={() => setShowPassword((prev) => !prev)}
+    >
+      {showPassword ? (
+        <EyeSlashIcon className="h-5 w-5" />
+      ) : (
+        <EyeIcon className="h-5 w-5" />
+      )}
+    </div>
+  </div>
+</div>
 
           <div className="flex justify-center">
             <button

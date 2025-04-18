@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export default function SignUpPage() {
   const [darkMode, setDarkMode] = useState(false);
@@ -10,6 +11,8 @@ export default function SignUpPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   // Refs for focus management
@@ -240,58 +243,77 @@ const handleInputChange = (e, field) => {
 </div>
 
 <div>
-  <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
-    Password
-  </label>
-  <input
-    id="password-field"
-    ref={passwordRef}
-    type="password"
-    value={password}
-    onChange={(e) => {
-      setPassword(e.target.value);
-      handleInputChange(e, "password");
-    }}
-    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-      darkMode
-        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-        : "placeholder-gray-500"
-    } ${errorMessage.includes("Password") ? "border-red-500" : ""}`}
-    placeholder="Enter your password"
-    required
-    autoComplete="new-password"
-  />
-  {errorMessage.includes("Password") && (
-    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
-  )}
-</div>
+              <label htmlFor="password-field" className="block text-sm sm:text-base font-semibold">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password-field"
+                  ref={passwordRef}
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full p-3 border rounded-md pr-10 text-sm sm:text-base ${
+                    darkMode
+                      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                      : "placeholder-gray-500"
+                  } ${errorMessage.includes("Password") ? "border-red-500" : ""}`}
+                  placeholder="Enter your password"
+                  required
+                />
+                <div
+                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
+                </div>
+              </div>
+              {errorMessage.includes("Password") && (
+                <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+              )}
+            </div>
 
-<div>
-  <label htmlFor="confirm-password-field" className="block text-sm sm:text-base font-semibold">
-    Re-enter Password
-  </label>
-  <input
-    id="confirm-password-field"
-    ref={confirmPasswordRef}
-    type="password"
-    value={confirmPassword}
-    onChange={(e) => {
-      setConfirmPassword(e.target.value);
-      handleInputChange(e, "confirmPassword");
-    }}
-    className={`w-full p-3 border rounded-md text-sm sm:text-base ${
-      darkMode
-        ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-        : "placeholder-gray-500"
-    } ${errorMessage.includes("Passwords") ? "border-red-500" : ""}`}
-    placeholder="Re-enter your password"
-    required
-    autoComplete="new-password"
-  />
-  {errorMessage.includes("Passwords") && (
-    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
-  )}
-</div>
+            <div>
+              <label
+                htmlFor="confirm-password-field"
+                className="block text-sm sm:text-base font-semibold"
+              >
+                Re-enter Password
+              </label>
+              <div className="relative">
+                <input
+                  id="confirm-password-field"
+                  ref={confirmPasswordRef}
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={`w-full p-3 border rounded-md pr-10 text-sm sm:text-base ${
+                    darkMode
+                      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
+                      : "placeholder-gray-500"
+                  } ${errorMessage.includes("Passwords") ? "border-red-500" : ""}`}
+                  placeholder="Re-enter your password"
+                  required
+                />
+                <div
+                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
+                </div>
+              </div>
+              {errorMessage.includes("Passwords") && (
+                <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+              )}
+            </div>
 
 {/* Password match visual feedback */}
 <p className={`${passwordMatchStyle} text-sm mt-1`}>
