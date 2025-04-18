@@ -181,7 +181,7 @@ const handleInputChange = (e, field) => {
           className={`p-6 rounded-lg shadow-md max-w-md mx-auto ${
             darkMode
               ? "bg-gray-900 border border-gray-700"
-              : "bg-gradient-to-r from-blue-50 via-yellow-100 to-white border border-gray-300"
+              : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white border border-gray-300"
           }`}
         >
           <form onSubmit={handleSignUp} className="space-y-4 sm:space-y-6">

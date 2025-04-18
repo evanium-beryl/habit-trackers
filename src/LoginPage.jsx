@@ -44,15 +44,11 @@ export default function LoginPage() {
     setEmail(""); // Clear email field
     setPassword(""); // Clear password field
   
-    // Force a state change after the success alert has been shown for a smooth transition
+    navigate("/habit-tracker"); // Redirect immediately
+  
     setTimeout(() => {
       setShowAlert(false); // Hide alert after 2 seconds
     }, 2000);
-  
-    // Delay redirection to ensure mobile browsers have finished rendering
-    setTimeout(() => {
-      navigate("/habit-tracker");
-    }, 2500); // Delay redirection
   };  
 
 // Inline styles for the push notification
