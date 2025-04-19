@@ -29,29 +29,32 @@ export default function LoginPage() {
   };
 
   // Handle login function
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+const handleLogin = (e) => {
+  e.preventDefault();
+  const users = JSON.parse(localStorage.getItem("users")) || []; // Retrieve all users
 
-    if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
-      setShowErrorAlert(true); // Show error alert
-      setTimeout(() => {
-        setShowErrorAlert(false); // Hide alert after 2 seconds
-      }, 2000);
-      return;
-    }
+  // Check if there is a user with the matching email and password
+  const storedUser = users.find(user => user.email === email && user.password === password);
 
-    localStorage.setItem("isAuthenticated", "true"); // Store login state
-    setShowAlert(true); // Show success alert
-    setEmail(""); // Clear email field
-    setPassword(""); // Clear password field
-
-    navigate("/habit-tracker"); // Redirect immediately
-
+  if (!storedUser) {
+    setShowErrorAlert(true); // Show error alert if no user matches
     setTimeout(() => {
-      setShowAlert(false); // Hide alert after 2 seconds
+      setShowErrorAlert(false); // Hide alert after 2 seconds
     }, 2000);
-  };
+    return;
+  }
+
+  localStorage.setItem("isAuthenticated", "true"); // Store login state
+  setShowAlert(true); // Show success alert
+  setEmail(""); // Clear email field
+  setPassword(""); // Clear password field
+
+  navigate("/habit-tracker"); // Redirect immediately
+
+  setTimeout(() => {
+    setShowAlert(false); // Hide alert after 2 seconds
+  }, 2000);
+};
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
