@@ -284,9 +284,10 @@ export default function SignUpPage() {
               </p>
             </div>
 
-            <p className={`${passwordMatchStyle} text-sm mt-1`}>
-              {password && confirmPassword && (password === confirmPassword ? "Passwords match" : "Passwords do not match")}
-            </p>
+            <p className={`text-sm mt-1 ${passwordMatchStyle}`}>
+  {password && confirmPassword && (password === confirmPassword ? "Passwords match" : "Passwords do not match")}
+</p>
+
 
             <button
               type="submit"
