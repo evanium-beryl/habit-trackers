@@ -40,7 +40,9 @@ export default function SignUpPage() {
     if (!validateForm()) return;
     setIsSubmitting(true);
     setErrorMessage("");
-    localStorage.setItem("user", JSON.stringify({ username, email, password }));
+    const newUser = { username, email, password };
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    localStorage.setItem("users", JSON.stringify([...existingUsers, newUser]));
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
@@ -51,11 +53,13 @@ export default function SignUpPage() {
 
   const validateForm = () => {
     setErrorMessage("");
+
     if (!username.trim()) {
       setErrorMessage("Username is required.");
       usernameRef.current.focus();
       return false;
     }
+
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
       setErrorMessage("Email is required.");
@@ -66,16 +70,21 @@ export default function SignUpPage() {
       emailRef.current.focus();
       return false;
     }
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$/;
+
+    const passwordPattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$/;
     if (!password) {
       setErrorMessage("Password is required.");
       passwordRef.current.focus();
       return false;
     } else if (!passwordPattern.test(password)) {
-      setErrorMessage("Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.");
+      setErrorMessage(
+        "Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character."
+      );
       passwordRef.current.focus();
       return false;
     }
+
     if (!confirmPassword) {
       setErrorMessage("Please confirm your password.");
       confirmPasswordRef.current.focus();
@@ -85,12 +94,15 @@ export default function SignUpPage() {
       confirmPasswordRef.current.focus();
       return false;
     }
-    const existingUser = JSON.parse(localStorage.getItem("user"));
-    if (existingUser && existingUser.email === email) {
+
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const isDuplicate = existingUsers.some((user) => user.email === email);
+    if (isDuplicate) {
       setErrorMessage("An account with this email already exists.");
       emailRef.current.focus();
       return false;
     }
+
     return true;
   };
 
@@ -102,7 +114,10 @@ export default function SignUpPage() {
       setErrorMessage("");
     } else if (field === "password" && errorMessage.includes("Password")) {
       setErrorMessage("");
-    } else if (field === "confirmPassword" && errorMessage.includes("Passwords")) {
+    } else if (
+      field === "confirmPassword" &&
+      errorMessage.includes("Passwords")
+    ) {
       setErrorMessage("");
     }
   };
@@ -121,16 +136,17 @@ export default function SignUpPage() {
     opacity: showAlert ? 1 : 0,
   };
 
-  const passwordMatchStyle = password === confirmPassword ? "text-green-500" : "text-red-500";
+  const passwordMatchStyle =
+    password === confirmPassword ? "text-green-500" : "text-red-500";
 
   return (
     <div
-  className={`min-h-screen flex flex-col items-center justify-center ${
-    darkMode
-      ? "bg-gray-900 text-white"
-      : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
-  }`}
->
+      className={`min-h-screen flex flex-col items-center justify-center ${
+        darkMode
+          ? "bg-gray-900 text-white"
+          : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
+      }`}
+    >
       <div
         className={`w-full py-4 px-6 shadow-lg ${
           darkMode
@@ -139,7 +155,9 @@ export default function SignUpPage() {
         }`}
       >
         <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide">Habit Tracker</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wide">
+            Habit Tracker
+          </h1>
           <button
             onClick={handleDarkModeToggle}
             className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base lg:text-lg ${
@@ -155,21 +173,24 @@ export default function SignUpPage() {
 
       <div className="px-4 w-full max-w-lg mt-10 container mx-auto">
         <p className="text-center text-base italic mb-10">
-          Stay consistent, build better habits, and track your progress effortlessly. <strong>Small steps, big results!</strong>
+          Stay consistent, build better habits, and track your progress
+          effortlessly. <strong>Small steps, big results!</strong>
         </p>
 
         <div
-  className={`relative p-6 rounded-xl overflow-hidden backdrop-blur-md ${
-    darkMode
-      ? "bg-gray-800/30 border border-cyan-500 text-white"
-      : "bg-white/20 border border-cyan-400 text-black"
-  }`}
->
-  <div className="absolute inset-0 rounded-xl z-0 animate-neon-glow pointer-events-none"></div>
-  <form className="relative z-10" onSubmit={handleSignUp} className="space-y-4">
-
+          className={`relative p-6 rounded-xl overflow-hidden backdrop-blur-md ${
+            darkMode
+              ? "bg-gray-800/30 border border-cyan-500 text-white"
+              : "bg-white/20 border border-cyan-400 text-black"
+          }`}
+        >
+          <div className="absolute inset-0 rounded-xl z-0 animate-neon-glow pointer-events-none"></div>
+          <form className="relative z-10 space-y-4" onSubmit={handleSignUp}>
             <div>
-              <label htmlFor="username-field" className="block text-base font-semibold">
+              <label
+                htmlFor="username-field"
+                className="block text-base font-semibold"
+              >
                 Username
               </label>
               <input
@@ -181,6 +202,7 @@ export default function SignUpPage() {
                   setUsername(e.target.value);
                   handleInputChange(e, "username");
                 }}
+                disabled={isSubmitting} // Disable input during submission
                 className={`box-border w-full h-12 px-4 border rounded-md text-base ${
                   darkMode
                     ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
@@ -196,7 +218,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="email-field" className="block text-base font-semibold">
+              <label
+                htmlFor="email-field"
+                className="block text-base font-semibold"
+              >
                 Email
               </label>
               <input
@@ -208,6 +233,7 @@ export default function SignUpPage() {
                   setEmail(e.target.value);
                   handleInputChange(e, "email");
                 }}
+                disabled={isSubmitting} // Disable input during submission
                 className={`box-border w-full h-12 px-4 border rounded-md text-base ${
                   darkMode
                     ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
@@ -223,7 +249,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="password-field" className="block text-base font-semibold">
+              <label
+                htmlFor="password-field"
+                className="block text-base font-semibold"
+              >
                 Password
               </label>
               <div className="relative">
@@ -233,11 +262,14 @@ export default function SignUpPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting} // Disable input during submission
                   className={`box-border w-full h-12 px-4 border rounded-md pr-10 text-base ${
                     darkMode
                       ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
                       : "placeholder-gray-500"
-                  } ${errorMessage.includes("Password") ? "border-red-500" : ""}`}
+                  } ${
+                    errorMessage.includes("Password") ? "border-red-500" : ""
+                  }`}
                   placeholder="Enter your password"
                   required
                 />
@@ -245,7 +277,11 @@ export default function SignUpPage() {
                   className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
                 </div>
               </div>
               <p className="h-4 text-xs mt-1 text-red-500">
@@ -254,7 +290,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="confirm-password-field" className="block text-base font-semibold">
+              <label
+                htmlFor="confirm-password-field"
+                className="block text-base font-semibold"
+              >
                 Re-enter Password
               </label>
               <div className="relative">
@@ -264,11 +303,14 @@ export default function SignUpPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isSubmitting} // Disable input during submission
                   className={`box-border w-full h-12 px-4 border rounded-md pr-10 text-base ${
                     darkMode
                       ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
                       : "placeholder-gray-500"
-                  } ${errorMessage.includes("Passwords") ? "border-red-500" : ""}`}
+                  } ${
+                    errorMessage.includes("Passwords") ? "border-red-500" : ""
+                  }`}
                   placeholder="Re-enter your password"
                   required
                 />
@@ -276,7 +318,11 @@ export default function SignUpPage() {
                   className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                 >
-                  {showConfirmPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                  {showConfirmPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
                 </div>
               </div>
               <p className="h-4 text-xs mt-1 text-red-500">
@@ -285,14 +331,19 @@ export default function SignUpPage() {
             </div>
 
             <p className={`text-sm mt-1 ${passwordMatchStyle}`}>
-  {password && confirmPassword && (password === confirmPassword ? "Passwords match" : "Passwords do not match")}
-</p>
-
+              {password &&
+                confirmPassword &&
+                (password === confirmPassword
+                  ? "Passwords match"
+                  : "Passwords do not match")}
+            </p>
 
             <button
               type="submit"
-              className={`w-full py-3 ${isSubmitting ? "bg-gray-400" : "bg-green-500"} text-white text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105`}
-              disabled={isSubmitting}
+              className={`w-full py-3 ${
+                isSubmitting ? "bg-gray-400" : "bg-green-500"
+              } text-white text-base rounded-md shadow-md hover:bg-green-600 transition-transform transform hover:scale-105`}
+              disabled={isSubmitting} // Prevent double submitting
             >
               {isSubmitting ? "Signing Up..." : "Sign Up"}
             </button>
@@ -301,7 +352,13 @@ export default function SignUpPage() {
 
         <div className="text-center mt-4">
           <p className="text-base">
-            Already have an account? <Link to="/" className="text-teal-500 hover:text-teal-600 font-semibold">Login here</Link>
+            Already have an account?{" "}
+            <Link
+              to="/"
+              className="text-teal-500 hover:text-teal-600 font-semibold"
+            >
+              Login here
+            </Link>
           </p>
         </div>
       </div>
