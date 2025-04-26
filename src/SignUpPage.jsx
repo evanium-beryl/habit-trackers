@@ -3,7 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export default function SignUpPage() {
-  const [darkMode, setDarkMode] = useState(false);
+  // Step 1: Check localStorage once when the page loads
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem("darkMode");
+    return stored ? JSON.parse(stored) : false;
+  });
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,6 +18,11 @@ export default function SignUpPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [isUsernameValid, setIsUsernameValid] = useState(true);
+  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
   const navigate = useNavigate();
 
   const usernameRef = useRef(null);
@@ -20,17 +30,27 @@ export default function SignUpPage() {
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
 
+  // Effect to apply dark mode class when darkMode state changes
   useEffect(() => {
-    const storedDarkMode = localStorage.getItem("darkMode");
-    if (storedDarkMode) {
-      setDarkMode(JSON.parse(storedDarkMode));
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
-  }, []);
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+  }, [darkMode]);
 
+  // Dark Mode Toggle Handler
   const handleDarkModeToggle = () => {
     setDarkMode((prevMode) => {
       const newMode = !prevMode;
       localStorage.setItem("darkMode", JSON.stringify(newMode));
+
+      if (newMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
       return newMode;
     });
   };
@@ -56,71 +76,137 @@ export default function SignUpPage() {
 
     if (!username.trim()) {
       setErrorMessage("Username is required.");
+      setIsUsernameValid(false);
+      usernameRef.current.focus();
+      return false;
+    }
+
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const isDuplicateEmail = existingUsers.some((user) => user.email === email);
+    if (isDuplicateEmail) {
+      setErrorMessage("An account with this email already exists.");
+      setIsEmailValid(false);
+      emailRef.current.focus();
+      return false;
+    }
+
+    const isUsernameTaken = existingUsers.some(
+      (user) => user.username === username
+    );
+    if (isUsernameTaken) {
+      setErrorMessage("This username has been taken.");
+      setIsUsernameValid(false);
       usernameRef.current.focus();
       return false;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      setErrorMessage("Email is required.");
-      emailRef.current.focus();
-      return false;
-    } else if (!emailPattern.test(email)) {
+    if (!email.trim() || !emailPattern.test(email)) {
       setErrorMessage("Please enter a valid email address.");
+      setIsEmailValid(false);
       emailRef.current.focus();
       return false;
     }
 
     const passwordPattern =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$/;
-    if (!password) {
-      setErrorMessage("Password is required.");
-      passwordRef.current.focus();
-      return false;
-    } else if (!passwordPattern.test(password)) {
+    if (!password || !passwordPattern.test(password)) {
       setErrorMessage(
         "Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character."
       );
+      setIsPasswordValid(false);
       passwordRef.current.focus();
       return false;
     }
 
-    if (!confirmPassword) {
-      setErrorMessage("Please confirm your password.");
-      confirmPasswordRef.current.focus();
-      return false;
-    } else if (password !== confirmPassword) {
+    if (!confirmPassword || password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
+      setIsConfirmPasswordValid(false);
       confirmPasswordRef.current.focus();
-      return false;
-    }
-
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const isDuplicate = existingUsers.some((user) => user.email === email);
-    if (isDuplicate) {
-      setErrorMessage("An account with this email already exists.");
-      emailRef.current.focus();
       return false;
     }
 
     return true;
   };
 
+  // Update `handleInputChange` to fix red border logic
   const handleInputChange = (e, field) => {
     const value = e.target.value;
-    if (field === "username" && errorMessage.includes("Username")) {
-      setErrorMessage("");
-    } else if (field === "email" && errorMessage.includes("Email")) {
-      setErrorMessage("");
-    } else if (field === "password" && errorMessage.includes("Password")) {
-      setErrorMessage("");
-    } else if (
-      field === "confirmPassword" &&
-      errorMessage.includes("Passwords")
-    ) {
-      setErrorMessage("");
+
+    if (field === "username") {
+      setUsername(value);
+      if (value.trim().length >= 3) {
+        setIsUsernameValid(true); // Clear red border
+        setErrorMessage(""); // Clear error message
+      } else {
+        setIsUsernameValid(false); // Trigger red border
+        setErrorMessage("Username must be at least 3 characters long.");
+      }
+    } else if (field === "email") {
+      setEmail(value);
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailPattern.test(value)) {
+        setIsEmailValid(true); // Clear red border
+        setErrorMessage(""); // Clear error message
+      } else {
+        setIsEmailValid(false); // Trigger red border
+        setErrorMessage("Please enter a valid email address.");
+      }
+    } else if (field === "password") {
+      setPassword(value);
+      const passwordPattern =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (passwordPattern.test(value)) {
+        setIsPasswordValid(true);
+        // Only clear password-related error messages
+        if (!errorMessage.includes("match")) {
+          setErrorMessage("");
+        }
+      } else {
+        setIsPasswordValid(false);
+        setErrorMessage(
+          "Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character."
+        );
+      }
+    } else if (field === "confirmPassword") {
+      setConfirmPassword(value);
+      if (value === password) {
+        setIsConfirmPasswordValid(true); // Clear red border
+        setErrorMessage(""); // Clear error message
+      } else {
+        setIsConfirmPasswordValid(false); // Trigger red border
+        setErrorMessage("Passwords do not match.");
+      }
     }
   };
+
+  // Update input field classes to only add red border if the field is invalid
+  <input
+    id="username-field"
+    ref={usernameRef}
+    type="text"
+    value={username}
+    onChange={(e) => handleInputChange(e, "username")}
+    disabled={isSubmitting}
+    className={`box-border w-full h-12 px-4 border rounded-md text-base transition-all duration-300 focus:outline-none ${
+      darkMode
+        ? "bg-gray-800 placeholder-gray-400 text-white focus:ring-2 focus:ring-cyan-500 hover:ring-1 hover:ring-cyan-500"
+        : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white placeholder-gray-500 text-black focus:ring-2 focus:ring-cyan-400 hover:ring-1 hover:ring-cyan-400"
+    } ${!isUsernameValid ? "border-red-500" : "border-gray-300"}`}
+  />;
+
+  // Same logic for other inputs...
+
+  const passwordRequirements = [
+    { text: "At least 8 characters", regex: /^.{8,}$/ },
+    { text: "At least one uppercase letter", regex: /[A-Z]/ },
+    { text: "At least one lowercase letter", regex: /[a-z]/ },
+    { text: "At least one number", regex: /\d/ },
+    {
+      text: "At least one special character (@, $, !, %, *, ?, &)",
+      regex: /[@$!%*?&]/,
+    },
+  ];
 
   const notificationStyle = {
     position: "fixed",
@@ -159,14 +245,15 @@ export default function SignUpPage() {
             Habit Tracker
           </h1>
           <button
-            onClick={handleDarkModeToggle}
+            onClick={handleDarkModeToggle} // When the button is clicked, toggle dark mode
             className={`px-3 py-2 rounded-md transition-transform transform hover:scale-105 text-sm sm:text-base lg:text-lg ${
               darkMode
                 ? "bg-gray-700 text-white hover:bg-gray-600"
                 : "bg-gradient-to-r from-blue-100 via-yellow-200 to-white text-black hover:from-blue-200 hover:via-yellow-300"
             }`}
           >
-            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}{" "}
+            {/* Change text based on the mode */}
           </button>
         </div>
       </div>
@@ -198,22 +285,22 @@ export default function SignUpPage() {
                 ref={usernameRef}
                 type="text"
                 value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  handleInputChange(e, "username");
-                }}
-                disabled={isSubmitting} // Disable input during submission
-                className={`box-border w-full h-12 px-4 border rounded-md text-base ${
+                onChange={(e) => handleInputChange(e, "username")}
+                disabled={isSubmitting}
+                className={`box-border w-full h-12 px-4 border rounded-md text-base transition-all duration-300 focus:outline-none ${
                   darkMode
-                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                    : "placeholder-gray-500"
-                } ${errorMessage.includes("Username") ? "border-red-500" : ""}`}
+                    ? "bg-gray-800 placeholder-gray-400 text-white focus:ring-2 focus:ring-cyan-500 hover:ring-1 hover:ring-cyan-500"
+                    : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white placeholder-gray-500 text-black focus:ring-2 focus:ring-cyan-400 hover:ring-1 hover:ring-cyan-400"
+                } ${!isUsernameValid ? "border-red-500" : "border-gray-300"}`}
                 placeholder="Enter your username"
                 required
                 autoComplete="username"
               />
               <p className="h-4 text-xs mt-1 text-red-500">
-                {errorMessage.includes("Username") ? errorMessage : ""}
+                {errorMessage.includes("Username") ||
+                errorMessage.includes("taken")
+                  ? errorMessage
+                  : ""}
               </p>
             </div>
 
@@ -229,64 +316,90 @@ export default function SignUpPage() {
                 ref={emailRef}
                 type="email"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  handleInputChange(e, "email");
-                }}
-                disabled={isSubmitting} // Disable input during submission
-                className={`box-border w-full h-12 px-4 border rounded-md text-base ${
+                onChange={(e) => handleInputChange(e, "email")}
+                disabled={isSubmitting}
+                className={`box-border w-full h-12 px-4 border rounded-md text-base transition-all duration-300 focus:outline-none ${
                   darkMode
-                    ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                    : "placeholder-gray-500"
-                } ${errorMessage.includes("Email") ? "border-red-500" : ""}`}
+                    ? "bg-gray-800 placeholder-gray-400 text-white focus:ring-2 focus:ring-cyan-500 hover:ring-1 hover:ring-cyan-500"
+                    : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white placeholder-gray-500 text-black focus:ring-2 focus:ring-cyan-400 hover:ring-1 hover:ring-cyan-400"
+                } ${!isEmailValid ? "border-red-500" : "border-gray-300"}`}
                 placeholder="Enter your email"
                 required
                 autoComplete="email"
               />
               <p className="h-4 text-xs mt-1 text-red-500">
-                {errorMessage.includes("Email") ? errorMessage : ""}
+                {errorMessage.includes("Email") ||
+                errorMessage.includes("account")
+                  ? errorMessage
+                  : ""}
               </p>
             </div>
 
             <div>
-              <label
-                htmlFor="password-field"
-                className="block text-base font-semibold"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password-field"
-                  ref={passwordRef}
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isSubmitting} // Disable input during submission
-                  className={`box-border w-full h-12 px-4 border rounded-md pr-10 text-base ${
-                    darkMode
-                      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                      : "placeholder-gray-500"
-                  } ${
-                    errorMessage.includes("Password") ? "border-red-500" : ""
-                  }`}
-                  placeholder="Enter your password"
-                  required
-                />
-                <div
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                  onClick={() => setShowPassword((prev) => !prev)}
+              <div>
+                <label
+                  htmlFor="password-field"
+                  className="block text-base font-semibold"
                 >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password-field"
+                    ref={passwordRef}
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => handleInputChange(e, "password")}
+                    disabled={isSubmitting}
+                    className={`box-border w-full h-12 px-4 border rounded-md text-base transition-all duration-300 focus:outline-none ${
+                      darkMode
+                        ? "bg-gray-800 placeholder-gray-400 text-white focus:ring-2 focus:ring-cyan-500 hover:ring-1 hover:ring-cyan-500"
+                        : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white placeholder-gray-500 text-black focus:ring-2 focus:ring-cyan-400 hover:ring-1 hover:ring-cyan-400"
+                    } ${
+                      !isPasswordValid ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <div
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? (
+                      <EyeSlashIcon className="h-5 w-5" />
+                    ) : (
+                      <EyeIcon className="h-5 w-5" />
+                    )}
+                  </div>
                 </div>
+                <p className="h-4 text-xs mt-1 text-red-500">
+                  {errorMessage.includes("must be at least") ||
+                  errorMessage.includes("uppercase")
+                    ? errorMessage
+                    : ""}
+                </p>
+
+                {/* Conditionally Render Password Guide */}
+                {isPasswordFocused && (
+                  <ul className="mt-2 space-y-1 text-sm">
+                    {passwordRequirements.map((req, index) => (
+                      <li
+                        key={index}
+                        className={`flex items-center ${
+                          req.regex.test(password)
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        <span className="mr-2">
+                          {req.regex.test(password) ? "✔" : "✘"}
+                        </span>
+                        {req.text}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-              <p className="h-4 text-xs mt-1 text-red-500">
-                {errorMessage.includes("Password") ? errorMessage : ""}
-              </p>
             </div>
 
             <div>
@@ -302,14 +415,16 @@ export default function SignUpPage() {
                   ref={confirmPasswordRef}
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={isSubmitting} // Disable input during submission
-                  className={`box-border w-full h-12 px-4 border rounded-md pr-10 text-base ${
+                  onChange={(e) => handleInputChange(e, "confirmPassword")}
+                  disabled={isSubmitting}
+                  className={`box-border w-full h-12 px-4 border rounded-md text-base transition-all duration-300 focus:outline-none ${
                     darkMode
-                      ? "bg-gray-800 border-gray-700 placeholder-gray-400 text-white"
-                      : "placeholder-gray-500"
+                      ? "bg-gray-800 placeholder-gray-400 text-white focus:ring-2 focus:ring-cyan-500 hover:ring-1 hover:ring-cyan-500"
+                      : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white placeholder-gray-500 text-black focus:ring-2 focus:ring-cyan-400 hover:ring-1 hover:ring-cyan-400"
                   } ${
-                    errorMessage.includes("Passwords") ? "border-red-500" : ""
+                    !isConfirmPasswordValid
+                      ? "border-red-500"
+                      : "border-gray-300"
                   }`}
                   placeholder="Re-enter your password"
                   required
@@ -325,9 +440,6 @@ export default function SignUpPage() {
                   )}
                 </div>
               </div>
-              <p className="h-4 text-xs mt-1 text-red-500">
-                {errorMessage.includes("Passwords") ? errorMessage : ""}
-              </p>
             </div>
 
             <p className={`text-sm mt-1 ${passwordMatchStyle}`}>
