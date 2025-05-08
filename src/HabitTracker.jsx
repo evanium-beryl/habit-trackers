@@ -442,63 +442,114 @@ export default function HabitTracker() {
       )}
 
       <div className="w-full max-w-6xl">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Habit Tracker</h1>
-          <div className="flex flex-wrap gap-2 items-center">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
-              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-            </button>
-            <button
-              onClick={resetStreaks}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
-            >
-              Reset Streaks
-            </button>
-            <button
-              onClick={resetHabits}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
-            >
-              Reset Habits
-            </button>
-            <button
-              onClick={() => setIsAddingHabit(!isAddingHabit)}
-              className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center"
-            >
-              {isAddingHabit ? (
-                <>
-                  <FaTimes className="mr-1" /> Cancel
-                </>
-              ) : (
-                <>
-                  <FaPlus className="mr-1" /> Add Habit
-                </>
-              )}
-            </button>
-            
-            {/* User Icon and Dropdown */}
-            <div className="relative">
+          
+          {/* Responsive controls - mobile in dropdown, desktop inline */}
+          <div className="flex items-center gap-2">
+            {/* Mobile controls (dropdown) */}
+            <div className="relative md:hidden">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
-                aria-label="User menu"
+                aria-label="Menu"
                 aria-expanded={isDropdownOpen}
               >
                 👤
               </button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md z-50">
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center"
+                  >
+                    {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+                  </button>
+                  <button
+                    onClick={resetStreaks}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
+                  >
+                    Reset Streaks
+                  </button>
+                  <button
+                    onClick={resetHabits}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
+                  >
+                    Reset Habits
+                  </button>
+                  <button
+                    onClick={() => setIsAddingHabit(!isAddingHabit)}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center"
+                  >
+                    {isAddingHabit ? "Cancel" : "Add Habit"}
+                  </button>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 border-t border-gray-200 dark:border-gray-700"
                   >
                     Logout
                   </button>
                 </div>
               )}
+            </div>
+            
+            {/* Desktop controls (inline) */}
+            <div className="hidden md:flex gap-2 items-center">
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
+                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+              </button>
+              <button
+                onClick={resetStreaks}
+                className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
+              >
+                Reset Streaks
+              </button>
+              <button
+                onClick={resetHabits}
+                className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
+              >
+                Reset Habits
+              </button>
+              <button
+                onClick={() => setIsAddingHabit(!isAddingHabit)}
+                className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center"
+              >
+                {isAddingHabit ? (
+                  <>
+                    <FaTimes className="mr-1" /> Cancel
+                  </>
+                ) : (
+                  <>
+                    <FaPlus className="mr-1" /> Add Habit
+                  </>
+                )}
+              </button>
+              
+              {/* User Icon and Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
+                  aria-label="User menu"
+                  aria-expanded={isDropdownOpen}
+                >
+                  👤
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
