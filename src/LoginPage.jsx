@@ -204,7 +204,7 @@ export default function LoginPage() {
   }, [formData, clearError, validateFieldLogic, handleError]);
 
   // Handle form submission
-  const handleLogin = useCallback((e) => {
+  const handleLogin = useCallback(async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
     
@@ -242,9 +242,8 @@ export default function LoginPage() {
       return;
     }
     
-    // Successful login - simulate API call
-    setTimeout(() => {
-      // In a real app, you'd set authentication tokens here
+    try {
+      // Save user data in localStorage (simulate authentication)
       localStorage.setItem("currentUser", JSON.stringify({
         username: user.username,
         email: user.email
@@ -258,12 +257,23 @@ export default function LoginPage() {
         alertMessage: "Login successful! Redirecting to habit tracker..."
       }));
       
-      // Redirect to habit-tracker after a brief delay
+      // Allow UI to update with success message before redirecting
+      // Use window.location for a full page navigation - works better on mobile
       setTimeout(() => {
-        navigate("/habit-tracker");
+        window.location.href = "/habit-tracker";
       }, 1000);
-    }, 800);
-  }, [formData, navigate, validateForm]);
+    } catch (error) {
+      console.error("Navigation error:", error);
+      
+      setUiState(prev => ({ 
+        ...prev, 
+        isSubmitting: false,
+        showAlert: true,
+        alertType: "error",
+        alertMessage: "An error occurred. Please try again."
+      }));
+    }
+  }, [formData, validateForm]);
 
   // Dismiss notification
   const dismissNotification = useCallback(() => {
