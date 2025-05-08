@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { FaCalendarAlt } from "react-icons/fa";
-import { FaUserCircle } from "react-icons/fa";
-import { format } from "date-fns"; // Import for date formatting
+import { FaCalendarAlt, FaTrash, FaPlus, FaTimes } from "react-icons/fa";
+import { format } from "date-fns";
 
 export default function HabitTracker() {
   const defaultHabits = [
@@ -52,13 +51,12 @@ export default function HabitTracker() {
 
   const navigate = useNavigate();
 
+  // State hooks
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [habits, setHabits] = useState(() => {
-    const storedHabits = JSON.parse(localStorage.getItem("habits"));
-    return storedHabits && Array.isArray(storedHabits)
-      ? storedHabits
-      : defaultHabits;
+    const storedHabits = localStorage.getItem("habits");
+    return storedHabits ? JSON.parse(storedHabits) : defaultHabits;
   });
   const [darkMode, setDarkMode] = useState(
     () => JSON.parse(localStorage.getItem("darkMode")) ?? false
@@ -71,40 +69,35 @@ export default function HabitTracker() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(null);
   const [newHabit, setNewHabit] = useState("");
-  const [isAddingHabit, setIsAddingHabit] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const [isAddingHabit, setIsAddingHabit] = useState(false);
   const [weekRange, setWeekRange] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
 
+  // Calculate week range whenever selectedDate changes
   useEffect(() => {
-    // Recalculate week range when selectedDate changes
     const calculateWeekRange = (date) => {
       const startOfWeek = new Date(date);
       startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Sunday
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
-      return `${format(startOfWeek, "MMM dd")} - ${format(
-        endOfWeek,
-        "MMM dd"
-      )}`;
+      return `${format(startOfWeek, "MMM dd")} - ${format(endOfWeek, "MMM dd")}`;
     };
 
     if (selectedDate) {
       const week = calculateWeekRange(selectedDate);
       setWeekRange(week);
     }
-  }, [selectedDate]); // Runs when selectedDate changes
+  }, [selectedDate]);
 
-  // Updated getCurrentWeekRange function
-  const getCurrentWeekRange = (date) => {
-    const startOfWeek = new Date(date);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    return `${format(startOfWeek, "MMM dd")} - ${format(endOfWeek, "MMM dd")}`;
-  };
+  // Helper functions
+  const getWeekKey = useCallback((date) => {
+    const firstDayOfWeek = new Date(date);
+    firstDayOfWeek.setDate(firstDayOfWeek.getDate() - firstDayOfWeek.getDay());
+    return firstDayOfWeek.toDateString(); // Use the week's starting day as the key
+  }, []);
 
-  // Define isCurrentWeek function here to avoid the ReferenceError
-  const isCurrentWeek = (date) => {
+  const isCurrentWeek = useCallback((date) => {
     const today = new Date();
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay()); // Start of the current week
@@ -113,9 +106,28 @@ export default function HabitTracker() {
 
     // Check if the given date is within the current week
     return date >= startOfWeek && date <= endOfWeek;
-  };
+  }, []);
 
-  // Authentication logic
+  const calculateStreak = useCallback((days) => {
+    let streak = 0;
+    let maxStreak = 0;
+    for (let i = 0; i < days.length; i++) {
+      if (days[i]) {
+        streak++;
+        maxStreak = Math.max(maxStreak, streak);
+      } else {
+        streak = 0;
+      }
+    }
+    return maxStreak;
+  }, []);
+
+  const calculateProgress = useCallback((habit) => {
+    const completedDays = habit.days.filter(Boolean).length;
+    return (completedDays / 7) * 100;
+  }, []);
+
+  // Authentication effects
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (isAuthenticated) {
@@ -125,57 +137,23 @@ export default function HabitTracker() {
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    // Remove only the authentication flag
-    localStorage.removeItem("isAuthenticated");
-    setIsDropdownOpen(false);
-    setIsAuthenticated(false);
-    navigate("/"); // Redirect to login page
-  };
-
-  const handleLogin = (email, password) => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (
-      storedUser &&
-      storedUser.email === email &&
-      storedUser.password === password
-    ) {
-      localStorage.setItem("isAuthenticated", "true");
-      setIsAuthenticated(true);
-
-      // Load habits data for the logged-in user
-      const userHabits = JSON.parse(localStorage.getItem("habits"));
-      if (userHabits) {
-        setHabits(userHabits); // Load existing habits for returning users
-      } else {
-        setHabits(defaultHabits); // Initialize habits if no data exists
-      }
-
-      navigate("/habit-tracker"); // Redirect to habit tracker
-    } else {
-      alert("Invalid credentials. Please try again.");
-    }
-  };
-
-  const handleSignUp = (email, password) => {
-    // Ensure we clear any previous user data before storing the new one
-    localStorage.clear(); // Clear all previous localStorage data
-    const user = { email, password };
-    localStorage.setItem("user", JSON.stringify(user)); // Save new user to localStorage
-    localStorage.setItem("isAuthenticated", "true"); // Set authentication flag
-    setIsAuthenticated(true);
-
-    // Clear old habits data and reset to default habits for new user
-    localStorage.removeItem("habits");
-    localStorage.setItem("habits", JSON.stringify(defaultHabits)); // Reset habits
-    setHabits(defaultHabits); // Initialize habits to default state
-    navigate("/habit-tracker"); // Redirect to habit tracker page
-  };
-
+  // Load habit data for selected week
   useEffect(() => {
-    localStorage.setItem("habits", JSON.stringify(habits)); // Store updated habits in localStorage
+    const weekKey = getWeekKey(selectedDate);
+    setHabits((prevHabits) =>
+      prevHabits.map((habit) => ({
+        ...habit,
+        days: habit.history[weekKey] || Array(7).fill(false), // Load days for the selected week
+      }))
+    );
+  }, [selectedDate, getWeekKey]);
+
+  // Save habits to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem("habits", JSON.stringify(habits));
   }, [habits]);
 
+  // Save dark mode preference
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
     document.body.className = darkMode
@@ -183,10 +161,12 @@ export default function HabitTracker() {
       : "bg-gray-100 text-black";
   }, [darkMode]);
 
+  // Save seen milestones
   useEffect(() => {
     localStorage.setItem("seenMilestones", JSON.stringify(seenMilestones));
   }, [seenMilestones]);
 
+  // Check for streaks and milestones
   useEffect(() => {
     const updatedHabits = [...habits];
     let milestoneReached = false;
@@ -201,14 +181,19 @@ export default function HabitTracker() {
     });
 
     if (milestoneReached) {
-      console.log(`Showing alert: ${milestoneMessage}`);
       setIsModalVisible(true);
       setModalMessage(milestoneMessage);
-
-      // Update state with congratulated habits after setting modal
       setHabits(updatedHabits);
     }
   }, [habits]);
+
+  // Event handlers
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    setIsDropdownOpen(false);
+    setIsAuthenticated(false);
+    navigate("/");
+  };
 
   const toggleDay = (habitIndex, dayIndex) => {
     setHabits((prevHabits) =>
@@ -248,59 +233,40 @@ export default function HabitTracker() {
     );
   };
 
-  const calculateStreak = (days) => {
-    let streak = 0;
-    let maxStreak = 0;
-    for (let i = 0; i < days.length; i++) {
-      if (days[i]) {
-        streak++;
-        maxStreak = Math.max(maxStreak, streak);
-      } else {
-        streak = 0;
-      }
-    }
-    return maxStreak;
-  };
-
-  const calculateProgress = (habit) => {
-    const completedDays = habit.days.filter(Boolean).length;
-    return (completedDays / 7) * 100;
-  };
-
   const resetStreaks = () => {
-    setHabits((prevHabits) =>
-      prevHabits.map((habit) => ({
-        ...habit,
-        streak: 0,
-        days: Array(7).fill(false),
-        history: {},
-      }))
-    );
+    // Show confirmation before resetting streaks
+    if (window.confirm("Are you sure you want to reset all streak data?")) {
+      setHabits((prevHabits) =>
+        prevHabits.map((habit) => ({
+          ...habit,
+          streak: 0,
+          days: Array(7).fill(false),
+          history: {},
+        }))
+      );
 
-    // Reset selected date to today after resetting streaks
-    const today = new Date();
-    setSelectedDate(today);
+      // Reset selected date to today after resetting streaks
+      setSelectedDate(new Date());
+    }
+  };
+
+  const resetHabits = () => {
+    // Show confirmation before resetting habits
+    if (window.confirm("Are you sure you want to reset to default habits? This will erase all your custom habits and progress.")) {
+      // Remove habits from localStorage
+      localStorage.removeItem("habits");
+
+      // Reset habits state to defaults
+      setHabits(defaultHabits);
+
+      // Reset selectedDate to today
+      setSelectedDate(new Date());
+    }
   };
 
   const toggleCalendar = (index) => {
     setShowCalendar((prev) => (prev === index ? null : index));
   };
-
-  const getWeekKey = (date) => {
-    const firstDayOfWeek = new Date(date);
-    firstDayOfWeek.setDate(firstDayOfWeek.getDate() - firstDayOfWeek.getDay());
-    return firstDayOfWeek.toDateString(); // Use the week's starting day as the key
-  };
-
-  useEffect(() => {
-    const weekKey = getWeekKey(selectedDate);
-    setHabits((prevHabits) =>
-      prevHabits.map((habit) => ({
-        ...habit,
-        days: habit.history[weekKey] || Array(7).fill(false), // Load days for the selected week
-      }))
-    );
-  }, [selectedDate]);
 
   const handleAddHabit = () => {
     if (newHabit.trim() && newCategory.trim()) {
@@ -312,23 +278,45 @@ export default function HabitTracker() {
           streak: 0,
           days: Array(7).fill(false),
           history: {},
+          congratulated: false,
         },
       ]);
       setNewHabit("");
       setNewCategory("");
       setIsAddingHabit(false);
+    } else {
+      setModalMessage("Please enter both a habit name and category.");
+      setIsModalVisible(true);
     }
   };
 
   const deleteHabit = (habitIndex) => {
-    setHabits((prevHabits) =>
-      prevHabits.filter((_, index) => index !== habitIndex)
-    );
+    if (window.confirm("Are you sure you want to delete this habit?")) {
+      setHabits((prevHabits) =>
+        prevHabits.filter((_, index) => index !== habitIndex)
+      );
+    }
   };
 
-  const Popup = ({ message, onClose }) => (
-    <div className="fixed inset-0 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-80">
+  // Get all unique categories for filtering
+  const categories = ["All", ...new Set(habits.map(habit => habit.category))];
+
+  // Filter habits based on selected category
+  const filteredHabits = filterCategory === "All" 
+    ? habits 
+    : habits.filter(habit => habit.category === filterCategory);
+
+  // UI Components
+  const Modal = ({ message, onClose }) => (
+    <div className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-80 relative">
+        <button 
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          aria-label="Close"
+        >
+          <FaTimes />
+        </button>
         <h2 className="text-lg font-bold text-gray-800 dark:text-white">
           Notice
         </h2>
@@ -343,6 +331,101 @@ export default function HabitTracker() {
     </div>
   );
 
+  const HabitCard = ({ habit, habitIndex }) => (
+    <div
+      className="bg-white dark:bg-gray-800 p-5 shadow-lg rounded-lg transition-all hover:shadow-xl"
+      role="region"
+      aria-label={`${habit.name} habit card`}
+    >
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="font-semibold text-lg text-gray-800 dark:text-white flex items-center">
+          {habit.name}{" "}
+          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">
+            {habit.category}
+          </span>
+        </h2>
+        <div className="flex gap-2">
+          <button
+            onClick={() => toggleCalendar(habitIndex)}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            aria-label="Open calendar"
+          >
+            <FaCalendarAlt size={20} />
+          </button>
+          <button
+            onClick={() => deleteHabit(habitIndex)}
+            className="text-red-500 hover:text-red-700"
+            aria-label="Delete habit"
+          >
+            <FaTrash size={18} />
+          </button>
+        </div>
+      </div>
+      {showCalendar === habitIndex && (
+        <Calendar
+          onChange={setSelectedDate}
+          value={selectedDate}
+          view="month"
+          tileClassName={({ date, view }) =>
+            view === "month" && isCurrentWeek(date)
+              ? "bg-yellow-300 rounded-full"
+              : ""
+          }
+          className="mb-3 rounded-lg"
+          locale="en-US"
+        />
+      )}
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center">
+          <span className="mr-1">Streak:</span> 
+          <span className="text-amber-500 font-bold text-lg">{habit.streak}</span> 
+          <span className="ml-1">🔥</span>
+        </span>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Week: {weekRange}
+        </p>
+      </div>
+      <div className="flex justify-between mt-4">
+        {"Sun Mon Tue Wed Thu Fri Sat"
+          .split(" ")
+          .map((day, dayIndex) => (
+            <button
+              key={dayIndex}
+              onClick={() => toggleDay(habitIndex, dayIndex)}
+              className={`w-10 h-10 rounded-full text-xs font-medium 
+                transition-all flex items-center justify-center
+                ${
+                  habit.days[dayIndex]
+                    ? "bg-green-500 text-white shadow-md"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                }`}
+              aria-label={`${day} - ${habit.days[dayIndex] ? "Completed" : "Not completed"}`}
+              aria-pressed={habit.days[dayIndex]}
+            >
+              {day.slice(0, 1)}
+            </button>
+          ))}
+      </div>
+      <div className="mt-4 bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+        <div
+          className="h-full bg-green-500 transition-all duration-300 flex items-center justify-center text-xs font-bold text-white"
+          style={{ width: `${calculateProgress(habit)}%` }}
+          role="progressbar"
+          aria-valuenow={Math.round(calculateProgress(habit))}
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          {calculateProgress(habit) > 15 && `${Math.round(calculateProgress(habit))}%`}
+        </div>
+      </div>
+      {calculateProgress(habit) < 15 && (
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          {Math.round(calculateProgress(habit))}%
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div
       className={`min-h-screen p-5 flex flex-col items-center ${
@@ -352,82 +435,65 @@ export default function HabitTracker() {
       }`}
     >
       {isModalVisible && (
-        <div className="fixed inset-0 flex justify-center items-center z-50">
-          {console.log("Modal is visible")}
-          {/* Modal content */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-80 z-50">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-white">
-              Milestone Reached!
-            </h2>
-            <p className="mt-4 text-gray-600 dark:text-gray-300">
-              {modalMessage}
-            </p>
-            <button
-              onClick={() => setIsModalVisible(false)}
-              className="mt-6 w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <Modal 
+          message={modalMessage} 
+          onClose={() => setIsModalVisible(false)} 
+        />
       )}
 
       <div className="w-full max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
           <h1 className="text-3xl font-bold">Habit Tracker</h1>
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-transform transform hover:scale-105"
+              className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
               {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
             </button>
             <button
               onClick={resetStreaks}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-transform transform hover:scale-105"
+              className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
             >
               Reset Streaks
             </button>
             <button
-              onClick={() => setIsAddingHabit(!isAddingHabit)}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-transform transform hover:scale-105 shadow-md hover:shadow-lg"
-            >
-              {isAddingHabit ? "Cancel" : "Add Habit"}
-            </button>
-           
-            {/* Reset Habits Button */}
-            <button
-              onClick={() => {
-                // Remove habits from localStorage
-                localStorage.removeItem("habits");
-
-                // Reset habits state to defaults
-                setHabits(defaultHabits);
-
-                // Reset selectedDate to today
-                const today = new Date();
-                setSelectedDate(today);
-
-                console.log("Habits reset and selectedDate updated to today.");
-              }}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-transform transform hover:scale-105 shadow-md hover:shadow-lg"
+              onClick={resetHabits}
+              className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
             >
               Reset Habits
             </button>
-
+            <button
+              onClick={() => setIsAddingHabit(!isAddingHabit)}
+              className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center"
+            >
+              {isAddingHabit ? (
+                <>
+                  <FaTimes className="mr-1" /> Cancel
+                </>
+              ) : (
+                <>
+                  <FaPlus className="mr-1" /> Add Habit
+                </>
+              )}
+            </button>
+            
             {/* User Icon and Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-800"
+                className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
+                aria-label="User menu"
+                aria-expanded={isDropdownOpen}
               >
                 👤
               </button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded-lg shadow-md">
+                <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md">
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
                   >
                     Logout
                   </button>
@@ -436,6 +502,7 @@ export default function HabitTracker() {
             </div>
           </div>
         </div>
+        
         <p
           className={`text-center mb-6 ${
             darkMode ? "text-gray-300" : "text-gray-900"
@@ -446,108 +513,99 @@ export default function HabitTracker() {
         </p>
 
         {isAddingHabit && (
-          <div className="mb-4 flex items-center gap-2">
-            <input
-              type="text"
-              value={newHabit}
-              onChange={(e) => setNewHabit(e.target.value)}
-              className="px-4 py-2 border rounded w-full"
-              placeholder="Enter new habit"
-            />
-            <select
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              className="px-4 py-2 border rounded"
-            >
-              <option value="">Select Category</option>
-              <option value="Health">Health</option>
-              <option value="Productivity">Productivity</option>
-              <option value="Personal Growth">Personal Growth</option>
-            </select>
-            <button
-              onClick={handleAddHabit}
-              className="px-4 py-2 rounded bg-gray-700 text-white transition-transform transform hover:scale-105 shadow-md hover:shadow-lg"
-            >
-              Add
-            </button>
+          <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+            <h3 className="text-lg font-medium mb-3 text-gray-800 dark:text-white">Add New Habit</h3>
+            <div className="flex flex-col md:flex-row gap-3">
+              <input
+                type="text"
+                value={newHabit}
+                onChange={(e) => setNewHabit(e.target.value)}
+                className="px-4 py-2 border rounded w-full text-black"
+                placeholder="Enter new habit"
+                aria-label="New habit name"
+              />
+              <select
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                className="px-4 py-2 border rounded text-black"
+                aria-label="Select category"
+              >
+                <option value="">Select Category</option>
+                <option value="Health">Health</option>
+                <option value="Productivity">Productivity</option>
+                <option value="Personal Growth">Personal Growth</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Relationships">Relationships</option>
+                <option value="Career">Career</option>
+              </select>
+              <button
+                onClick={handleAddHabit}
+                className="px-6 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md"
+              >
+                Add Habit
+              </button>
+            </div>
           </div>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {habits.map((habit, habitIndex) => (
-            <div
-              key={habitIndex}
-              className="bg-white dark:bg-gray-800 p-5 shadow-lg rounded-lg transition-transform transform hover:scale-105"
-            >
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="font-semibold text-lg text-gray-300 dark:text-white">
-                  {habit.name}{" "}
-                  <span className="text-sm text-gray-500">
-                    ({habit.category})
-                  </span>
-                </h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => toggleCalendar(habitIndex)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <FaCalendarAlt size={20} />
-                  </button>
-                  <button
-                    onClick={() => deleteHabit(habitIndex)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-              {showCalendar === habitIndex && (
-                <Calendar
-                  onChange={setSelectedDate}
-                  value={selectedDate}
-                  view="month"
-                  tileClassName={({ date, view }) =>
-                    view === "month" && isCurrentWeek(date)
-                      ? "bg-yellow-300 rounded-full"
-                      : ""
-                  }
-                  className="mb-3 rounded-lg"
-                  locale="en-US" // Ensure proper locale for Sunday start
-                />
-              )}
-              <span className="text-sm text-gray-500 dark:text-gray-300">
-                Streak: {habit.streak} 🔥
-              </span>
-              <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
-                Week: {weekRange}
-              </p>
-              <div className="flex justify-between mt-2">
-                {"Sun Mon Tue Wed Thu Fri Sat"
-                  .split(" ")
-                  .map((day, dayIndex) => (
-                    <button
-                      key={dayIndex}
-                      onClick={() => toggleDay(habitIndex, dayIndex)}
-                      className={`w-12 h-12 sm:w-10 sm:h-10 rounded-full text-sm font-medium transition-transform transform hover:scale-110 ${
-                        habit.days[dayIndex]
-                          ? "bg-green-500 text-white"
-                          : "bg-gray-300 text-black"
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
-              </div>
-              <div className="mt-4 bg-gray-300 dark:bg-gray-600 rounded h-3 overflow-hidden">
-                <div
-                  className="h-full bg-green-500 flex items-center justify-center text-xs font-bold text-white"
-                  style={{ width: `${calculateProgress(habit)}%` }}
-                >
-                  {`${Math.round(calculateProgress(habit))}%`}
-                </div>
-              </div>
-            </div>
-          ))}
+
+        {/* Category filter */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setFilterCategory(category)}
+                className={`px-3 py-1 rounded-full text-sm transition-all ${
+                  filterCategory === category
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Stats summary */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Total Habits</h3>
+            <p className="text-3xl font-bold text-blue-600">{habits.length}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Active Streaks</h3>
+            <p className="text-3xl font-bold text-green-600">
+              {habits.filter(h => h.streak > 0).length}
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Longest Streak</h3>
+            <p className="text-3xl font-bold text-amber-500">
+              {Math.max(...habits.map(h => h.streak), 0)}🔥
+            </p>
+          </div>
+        </div>
+
+        {filteredHabits.length === 0 ? (
+          <div className="text-center p-10 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              {habits.length === 0 ? 
+                "No habits found. Add your first habit to get started!" : 
+                "No habits match the selected category filter."}  
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredHabits.map((habit, habitIndex) => (
+              <HabitCard 
+                key={habitIndex} 
+                habit={habit} 
+                habitIndex={habits.indexOf(habit)} 
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
