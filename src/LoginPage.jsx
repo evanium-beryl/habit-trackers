@@ -205,16 +205,8 @@ export default function LoginPage() {
 
   // Handle form submission
   const handleLogin = useCallback((e) => {
-    // ... existing code ...
-    
-    // After successful login and before redirect
-    localStorage.setItem("currentUser", JSON.stringify({
-      username: user.username,
-      email: user.email
-    }));
-    
-    // Add this line:
-    localStorage.setItem("isAuthenticated", "true");
+    e.preventDefault();
+    if (!validateForm()) return;
     
     setUiState(prev => ({ 
       ...prev, 
@@ -258,6 +250,9 @@ export default function LoginPage() {
         email: user.email
       }));
       
+      // Set isAuthenticated flag in localStorage - THIS IS THE KEY FIX
+      localStorage.setItem("isAuthenticated", "true");
+      
       setUiState(prev => ({ 
         ...prev, 
         isSubmitting: false,
@@ -268,7 +263,8 @@ export default function LoginPage() {
       
       // Redirect to habit-tracker after a brief delay
       setTimeout(() => {
-        navigate("/habit-tracker");
+        // Force the navigation with replace to ensure it works on all devices
+        navigate("/habit-tracker", { replace: true });
       }, 1000);
     }, 800);
   }, [formData, navigate, validateForm]);
