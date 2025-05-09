@@ -248,6 +248,8 @@ export default function HabitTracker() {
       // Reset selected date to today after resetting streaks
       setSelectedDate(new Date());
     }
+    // Close dropdown after action
+    setIsDropdownOpen(false);
   };
 
   const resetHabits = () => {
@@ -262,6 +264,8 @@ export default function HabitTracker() {
       // Reset selectedDate to today
       setSelectedDate(new Date());
     }
+    // Close dropdown after action
+    setIsDropdownOpen(false);
   };
 
   const toggleCalendar = (index) => {
@@ -468,7 +472,17 @@ export default function HabitTracker() {
               </button>
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50">
-                  {/* Dark mode button removed from dropdown */}
+                  {/* Added close button to the mobile dropdown */}
+                  <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="font-medium">Menu</span>
+                    <button
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      aria-label="Close menu"
+                    >
+                      <FaTimes size={16} />
+                    </button>
+                  </div>
                   <button
                     onClick={resetStreaks}
                     className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
@@ -482,7 +496,10 @@ export default function HabitTracker() {
                     Reset Habits
                   </button>
                   <button
-                    onClick={() => setIsAddingHabit(!isAddingHabit)}
+                    onClick={() => {
+                      setIsAddingHabit(!isAddingHabit); 
+                      setIsDropdownOpen(false);
+                    }}
                     className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 flex items-center"
                   >
                     {isAddingHabit ? "Cancel" : "Add Habit"}
