@@ -481,14 +481,14 @@ export default function HabitTracker() {
                   ></div>
                   
                   {/* Dropdown menu */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50">
+                  <div className="absolute right-0 mt-12 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50">
                     {/* Close button in the top-right corner */}
                     <button
                       onClick={() => setIsDropdownOpen(false)}
-                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                       aria-label="Close menu"
                     >
-                      <FaTimes size={16} />
+                      <FaTimes size={18} />
                     </button>
                     
                     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
