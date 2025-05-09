@@ -449,6 +449,15 @@ export default function HabitTracker() {
           <div className="flex items-center gap-2">
             {/* Mobile controls (dropdown) */}
             <div className="relative md:hidden">
+              {/* Dark mode toggle moved outside dropdown */}
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="mr-2 px-3 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
+                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {darkMode ? "☀" : "🌙"}
+              </button>
+              
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
@@ -459,12 +468,6 @@ export default function HabitTracker() {
               </button>
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md z-50">
-                  <button
-                    onClick={() => setDarkMode(!darkMode)}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center"
-                  >
-                    {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-                  </button>
                   <button
                     onClick={resetStreaks}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
