@@ -494,7 +494,7 @@ export default function HabitTracker() {
                   ></div>
 
                   {/* Dropdown menu - FIXED: positioned lower with top-20 instead of mt-16 */}
-                  <div className="absolute right-0 top-20 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50">
+                  <div className="absolute right-0 top-18 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50">
                     {/* Clear menu label removed to avoid confusion */}
 
                     {/* Improved close button - larger and more visible at the top */}
