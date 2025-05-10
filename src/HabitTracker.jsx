@@ -343,19 +343,27 @@ export default function HabitTracker() {
           <div className="flex items-center gap-2">
             {/* Mobile controls */}
             <div className="relative md:hidden flex items-center">
-              {/* Dark mode toggle */}
+              {/* Dark mode toggle - UPDATED */}
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className="mr-2 px-3 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
+                className={`mr-2 px-3 py-2 rounded transition-all shadow-md ${
+                  darkMode 
+                    ? "bg-gray-800 text-gray-300 hover:bg-gray-700" 
+                    : "bg-white text-gray-800 hover:bg-gray-100"
+                }`}
                 aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {darkMode ? "☀" : "🌙"}
               </button>
 
-              {/* Menu button */}
+              {/* Menu button - UPDATED */}
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  darkMode 
+                    ? "bg-gray-800 text-gray-300 hover:bg-gray-700" 
+                    : "bg-white text-gray-800 hover:bg-gray-100"
+                }`}
                 aria-label="Menu"
                 aria-expanded={isDropdownOpen}
               >
@@ -409,22 +417,41 @@ export default function HabitTracker() {
 
             {/* Desktop controls */}
             <div className="hidden md:flex gap-2 items-center">
-              <button onClick={() => setDarkMode(!darkMode)} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+              {/* Dark mode toggle - UPDATED */}
+              <button 
+                onClick={() => setDarkMode(!darkMode)} 
+                className={`px-4 py-2 rounded transition-all shadow-md ${
+                  darkMode 
+                    ? "bg-gray-800 text-gray-300 hover:bg-gray-700" 
+                    : "bg-white text-gray-800 hover:bg-gray-100"
+                }`} 
+                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
                 {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
               </button>
-              <button onClick={resetStreaks} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
+              
+              <button onClick={resetStreaks} className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md">
                 Reset Streaks
               </button>
-              <button onClick={resetHabits} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
+              <button onClick={resetHabits} className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md">
                 Reset Habits
               </button>
               <button onClick={() => setIsAddingHabit(!isAddingHabit)} className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center">
                 {isAddingHabit ? (<><FaTimes className="mr-1" /> Cancel</>) : (<><FaPlus className="mr-1" /> Add Habit</>)}
               </button>
 
-              {/* User menu dropdown */}
+              {/* User menu dropdown - UPDATED */}
               <div className="relative">
-                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600" aria-label="User menu" aria-expanded={isDropdownOpen}>
+                <button 
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)} 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    darkMode 
+                      ? "bg-gray-800 text-gray-300 hover:bg-gray-700" 
+                      : "bg-white text-gray-800 hover:bg-gray-100"
+                  }`} 
+                  aria-label="User menu" 
+                  aria-expanded={isDropdownOpen}
+                >
                   👤
                 </button>
                 {isDropdownOpen && (
