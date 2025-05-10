@@ -471,7 +471,7 @@ export default function HabitTracker() {
                 👤
               </button>
               
-              {/* Mobile dropdown menu with close button overlay */}
+              {/* Mobile dropdown menu with IMPROVED close button overlay */}
               {isDropdownOpen && (
                 <>
                   {/* Overlay for closing the dropdown when clicking outside */}
@@ -481,15 +481,17 @@ export default function HabitTracker() {
                   ></div>
                   
                   {/* Dropdown menu */}
-                  <div className="absolute right-0 mt-16 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50 pt-10">
-                    {/* Close button repositioned to be more visible */}
-                    <button
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="absolute top-3 right-3 p-2 bg-red-100 dark:bg-red-800 text-red-600 dark:text-red-200 rounded-full hover:bg-red-200 dark:hover:bg-red-700 z-50"
-                      aria-label="Close menu"
-                    >
-                      <FaTimes size={20} />
-                    </button>
+                  <div className="absolute right-0 mt-16 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50 pt-2">
+                    {/* IMPROVED close button - larger, more visible, better positioned */}
+                    <div className="flex justify-end p-2">
+                      <button
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-md flex items-center justify-center w-8 h-8"
+                        aria-label="Close menu"
+                      >
+                        <FaTimes size={16} />
+                      </button>
+                    </div>
                     
                     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                       <span className="font-medium">Menu</span>
