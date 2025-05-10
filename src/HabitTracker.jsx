@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -40,7 +40,7 @@ export default function HabitTracker() {
   const [weekRange, setWeekRange] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
 
-  // Helper functions
+  // Helper functions with useCallback to prevent recreation on every render
   const getWeekKey = useCallback(date => {
     const firstDayOfWeek = new Date(date);
     firstDayOfWeek.setDate(firstDayOfWeek.getDate() - firstDayOfWeek.getDay());
@@ -83,7 +83,36 @@ export default function HabitTracker() {
     }
   }, [darkMode]);
 
-  // Calculate week range
+  // SPLIT EFFECTS - Separate concerns for better performance
+  
+  // Authentication effect - runs only once
+  useEffect(() => {
+    const isAuth = localStorage.getItem("isAuthenticated");
+    if (isAuth) setIsAuthenticated(true);
+    else navigate("/");
+  }, [navigate]);
+  
+  // Dark mode effect - runs only when darkMode changes
+  useEffect(() => {
+    document.body.className = darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black";
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+  }, [darkMode]);
+  
+  // Save habits to localStorage with debounce
+  useEffect(() => {
+    const saveTimeout = setTimeout(() => {
+      localStorage.setItem("habits", JSON.stringify(habits));
+    }, 300); // Debounce by 300ms
+    
+    return () => clearTimeout(saveTimeout);
+  }, [habits]);
+  
+  // Save seen milestones to localStorage
+  useEffect(() => {
+    localStorage.setItem("seenMilestones", JSON.stringify(seenMilestones));
+  }, [seenMilestones]);
+  
+  // Calculate week range when selected date changes
   useEffect(() => {
     if (selectedDate) {
       const startOfWeek = new Date(selectedDate);
@@ -93,23 +122,9 @@ export default function HabitTracker() {
       setWeekRange(`${format(startOfWeek, "MMM dd")} - ${format(endOfWeek, "MMM dd")}`);
     }
   }, [selectedDate]);
-
-  // Consolidated effects
+  
+  // Load habit data for selected week
   useEffect(() => {
-    // Authentication check
-    const isAuth = localStorage.getItem("isAuthenticated");
-    if (isAuth) setIsAuthenticated(true);
-    else navigate("/");
-    
-    // Save to localStorage
-    localStorage.setItem("habits", JSON.stringify(habits));
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
-    localStorage.setItem("seenMilestones", JSON.stringify(seenMilestones));
-    
-    // Apply dark mode
-    document.body.className = darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black";
-    
-    // Load habit data for selected week
     const weekKey = getWeekKey(selectedDate);
     setHabits(prevHabits =>
       prevHabits.map(habit => ({
@@ -117,8 +132,10 @@ export default function HabitTracker() {
         days: habit.history[weekKey] || Array(7).fill(false),
       }))
     );
-    
-    // Check for streaks and milestones
+  }, [selectedDate, getWeekKey]);
+  
+  // Check for streaks and milestones
+  useEffect(() => {
     const updatedHabits = [...habits];
     let milestoneReached = false;
     let milestoneMessage = "";
@@ -132,53 +149,72 @@ export default function HabitTracker() {
     });
 
     if (milestoneReached) {
-      setIsModalVisible(true);
-      setModalMessage(milestoneMessage);
       setHabits(updatedHabits);
+      // Delay modal showing slightly to avoid UI jank
+      setTimeout(() => {
+        setIsModalVisible(true);
+        setModalMessage(milestoneMessage);
+      }, 100);
     }
-  }, [darkMode, habits, seenMilestones, navigate, selectedDate, getWeekKey]);
+  }, [habits]);
 
-  // Event handlers
-  const handleLogout = () => {
+  // Event handlers with useCallback
+  const handleLogout = useCallback(() => {
     localStorage.removeItem("isAuthenticated");
     setIsDropdownOpen(false);
     setIsAuthenticated(false);
     navigate("/");
-  };
+  }, [navigate]);
 
-  const toggleDay = (habitIndex, dayIndex) => {
-    setHabits(prevHabits =>
-      prevHabits.map((habit, index) => {
-        if (index === habitIndex) {
-          const updatedDays = [...habit.days];
-          
-          // Check if any day after the current day is already toggled
-          const isDayLocked = updatedDays.some((day, idx) => day && idx > dayIndex);
+  // OPTIMIZED TOGGLE DAY FUNCTION - key to fixing the lag issue
+  const toggleDay = useCallback((habitIndex, dayIndex, e) => {
+    // Stop event propagation - crucial for better toggle response
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    setHabits(prevHabits => {
+      // Get the habit we want to update
+      const habit = prevHabits[habitIndex];
+      const updatedDays = [...habit.days];
+      
+      // Check if any day after the current day is already toggled
+      const isDayLocked = updatedDays.some((day, idx) => day && idx > dayIndex);
 
-          if (!updatedDays[dayIndex] && isDayLocked) {
-            setModalMessage("Skipped days cannot be toggled after subsequent days are marked.");
-            setIsModalVisible(true);
-            return habit;
-          }
+      if (!updatedDays[dayIndex] && isDayLocked) {
+        // Don't update the state here, instead handle the modal separately
+        setTimeout(() => {
+          setModalMessage("Skipped days cannot be toggled after subsequent days are marked.");
+          setIsModalVisible(true);
+        }, 0);
+        
+        return prevHabits; // Return unchanged
+      }
 
-          updatedDays[dayIndex] = !updatedDays[dayIndex];
-          const weekKey = getWeekKey(selectedDate);
-          const newStreak = calculateStreak(updatedDays);
+      // Toggle the day
+      updatedDays[dayIndex] = !updatedDays[dayIndex];
+      
+      // Update streak and history
+      const weekKey = getWeekKey(selectedDate);
+      const newStreak = calculateStreak(updatedDays);
+      
+      // Create new habits array with the updated habit
+      return prevHabits.map((h, idx) => 
+        idx === habitIndex 
+          ? {
+              ...h,
+              days: updatedDays,
+              streak: newStreak,
+              history: { ...h.history, [weekKey]: updatedDays },
+              congratulated: h.congratulated && newStreak % 7 !== 0
+            }
+          : h
+      );
+    });
+  }, [getWeekKey, calculateStreak, selectedDate]);
 
-          return {
-            ...habit,
-            days: updatedDays,
-            streak: newStreak,
-            history: { ...habit.history, [weekKey]: updatedDays },
-            congratulated: habit.congratulated && newStreak % 7 !== 0,
-          };
-        }
-        return habit;
-      })
-    );
-  };
-
-  const resetStreaks = () => {
+  const resetStreaks = useCallback(() => {
     if (window.confirm("Are you sure you want to reset all streak data?")) {
       setHabits(prevHabits =>
         prevHabits.map(habit => ({
@@ -191,22 +227,22 @@ export default function HabitTracker() {
       setSelectedDate(new Date());
     }
     setIsDropdownOpen(false);
-  };
+  }, []);
 
-  const resetHabits = () => {
+  const resetHabits = useCallback(() => {
     if (window.confirm("Are you sure you want to reset to default habits? This will erase all your custom habits and progress.")) {
       localStorage.removeItem("habits");
       setHabits(defaultHabits);
       setSelectedDate(new Date());
     }
     setIsDropdownOpen(false);
-  };
+  }, [defaultHabits]);
 
-  const toggleCalendar = index => {
+  const toggleCalendar = useCallback(index => {
     setShowCalendar(prev => (prev === index ? null : index));
-  };
+  }, []);
 
-  const handleAddHabit = () => {
+  const handleAddHabit = useCallback(() => {
     if (newHabit.trim() && newCategory.trim()) {
       setHabits(prevHabits => [
         ...prevHabits,
@@ -226,21 +262,26 @@ export default function HabitTracker() {
       setModalMessage("Please enter both a habit name and category.");
       setIsModalVisible(true);
     }
-  };
+  }, [newHabit, newCategory]);
 
-  const deleteHabit = habitIndex => {
+  const deleteHabit = useCallback(habitIndex => {
     if (window.confirm("Are you sure you want to delete this habit?")) {
       setHabits(prevHabits => prevHabits.filter((_, index) => index !== habitIndex));
     }
-  };
+  }, []);
 
-  // Get unique categories
-  const categories = ["All", ...new Set(habits.map(habit => habit.category))];
+  // Use useMemo for derived data
+  const categories = useMemo(() => 
+    ["All", ...new Set(habits.map(habit => habit.category))], 
+    [habits]
+  );
   
-  // Filter habits
-  const filteredHabits = filterCategory === "All" 
-    ? habits 
-    : habits.filter(habit => habit.category === filterCategory);
+  const filteredHabits = useMemo(() => 
+    filterCategory === "All" 
+      ? habits 
+      : habits.filter(habit => habit.category === filterCategory),
+    [habits, filterCategory]
+  );
 
   // UI Components
   const Modal = ({ message, onClose }) => (
@@ -258,7 +299,8 @@ export default function HabitTracker() {
     </div>
   );
 
-  const HabitCard = ({ habit, habitIndex }) => (
+  // Optimize habit card component with React.memo
+  const HabitCard = useCallback(({ habit, habitIndex }) => (
     <div className="bg-white dark:bg-gray-800 p-5 shadow-lg rounded-lg transition-all hover:shadow-xl" role="region" aria-label={`${habit.name} habit card`}>
       <div className="flex justify-between items-center mb-3">
         <h2 className="font-semibold text-lg text-gray-800 dark:text-white flex items-center">
@@ -268,10 +310,24 @@ export default function HabitTracker() {
           </span>
         </h2>
         <div className="flex gap-2">
-          <button onClick={() => toggleCalendar(habitIndex)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Open calendar">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleCalendar(habitIndex);
+            }} 
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" 
+            aria-label="Open calendar"
+          >
             <FaCalendarAlt size={20} />
           </button>
-          <button onClick={() => deleteHabit(habitIndex)} className="text-red-500 hover:text-red-700" aria-label="Delete habit">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteHabit(habitIndex);
+            }} 
+            className="text-red-500 hover:text-red-700" 
+            aria-label="Delete habit"
+          >
             <FaTrash size={18} />
           </button>
         </div>
@@ -301,7 +357,7 @@ export default function HabitTracker() {
         {"Sun Mon Tue Wed Thu Fri Sat".split(" ").map((day, dayIndex) => (
           <button
             key={dayIndex}
-            onClick={() => toggleDay(habitIndex, dayIndex)}
+            onClick={(e) => toggleDay(habitIndex, dayIndex, e)}
             className={`w-10 h-10 rounded-full text-xs font-medium transition-all flex items-center justify-center ${
               habit.days[dayIndex]
                 ? "bg-green-500 text-white shadow-md"
@@ -334,7 +390,7 @@ export default function HabitTracker() {
         </div>
       )}
     </div>
-  );
+  ), [toggleDay, toggleCalendar, deleteHabit, calculateProgress, weekRange, selectedDate, showCalendar, isCurrentWeek]);
 
   const FooterIcon = ({ Icon, label }) => (
     <div className="flex flex-col items-center">
@@ -355,7 +411,6 @@ export default function HabitTracker() {
 
       <main className="flex-grow p-5 flex flex-col items-center">
         <div className="w-full max-w-6xl">
-          {/* [All existing content including headers, habit cards, etc. stays the same] */}
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Habit Tracker</h1>
 
@@ -365,7 +420,11 @@ export default function HabitTracker() {
               <div className="relative md:hidden flex items-center">
                 {/* Dark mode toggle */}
                 <button
-                  onClick={() => setDarkMode(!darkMode)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setDarkMode(!darkMode);
+                  }}
                   className={`mr-2 px-3 py-2 rounded transition-all hover:opacity-90 shadow-md ${
                     darkMode 
                       ? "bg-gray-700 text-white hover:bg-gray-600" 
@@ -378,7 +437,11 @@ export default function HabitTracker() {
 
                 {/* Menu button */}
                 <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsDropdownOpen(!isDropdownOpen);
+                  }}
                   className={`w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90 shadow-md ${
                     darkMode 
                       ? "bg-gray-700 text-white hover:bg-gray-600" 
@@ -393,7 +456,14 @@ export default function HabitTracker() {
                 {/* Mobile dropdown menu */}
                 <div className="relative">
                   {isDropdownOpen && (
-                    <div className="fixed inset-0 z-40 bg-black bg-opacity-50" onClick={() => setIsDropdownOpen(false)}></div>
+                    <div 
+                      className="fixed inset-0 z-40 bg-black bg-opacity-50" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsDropdownOpen(false);
+                      }}
+                    ></div>
                   )}
                   
                   <div className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
@@ -404,7 +474,11 @@ export default function HabitTracker() {
                       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                         <h3 className="font-bold text-gray-800 dark:text-white">Menu</h3>
                         <button
-                          onClick={() => setIsDropdownOpen(false)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsDropdownOpen(false);
+                          }}
                           className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                           aria-label="Close menu"
                         >
@@ -414,19 +488,33 @@ export default function HabitTracker() {
                       
                       {/* Menu items */}
                       <div className="flex-1 overflow-y-auto">
-                        <button onClick={resetStreaks} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
+                        <button onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          resetStreaks();
+                        }} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
                           Reset Streaks
                         </button>
-                        <button onClick={resetHabits} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
+                        <button onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          resetHabits();
+                        }} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
                           Reset Habits
                         </button>
-                        <button onClick={() => { 
+                        <button onClick={(e) => { 
+                          e.preventDefault();
+                          e.stopPropagation();
                           setIsAddingHabit(!isAddingHabit); 
                           setIsDropdownOpen(false); 
                         }} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
                           {isAddingHabit ? "Cancel" : "Add Habit"}
                         </button>
-                        <button onClick={handleLogout} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-white">
+                        <button onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleLogout();
+                        }} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-white">
                           Logout
                         </button>
                       </div>
@@ -437,33 +525,65 @@ export default function HabitTracker() {
 
               {/* Desktop controls */}
               <div className="hidden md:flex gap-2 items-center">
-                <button onClick={() => setDarkMode(!darkMode)} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDarkMode(!darkMode);
+                }} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
                   {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
                 </button>
-                <button onClick={resetStreaks} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  resetStreaks();
+                }} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
                   Reset Streaks
                 </button>
-                <button onClick={resetHabits} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  resetHabits();
+                }} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
                   Reset Habits
                 </button>
-                <button onClick={() => setIsAddingHabit(!isAddingHabit)} className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center">
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsAddingHabit(!isAddingHabit);
+                }} className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center">
                   {isAddingHabit ? (<><FaTimes className="mr-1" /> Cancel</>) : (<><FaPlus className="mr-1" /> Add Habit</>)}
                 </button>
 
                 {/* User menu dropdown */}
                 <div className="relative">
-                  <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600" aria-label="User menu" aria-expanded={isDropdownOpen}>
+                  <button onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsDropdownOpen(!isDropdownOpen);
+                  }} className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600" aria-label="User menu" aria-expanded={isDropdownOpen}>
                     👤
                   </button>
                   {isDropdownOpen && (
                     <>
-                      <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)}></div>
+                      <div className="fixed inset-0 z-40" onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsDropdownOpen(false);
+                      }}></div>
                       <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md z-50">
-                        <button onClick={() => setIsDropdownOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Close menu">
+                        <button onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsDropdownOpen(false);
+                        }} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Close menu">
                           <FaTimes size={16} />
                         </button>
                         <div className="px-4 py-2 pb-4">
-                          <button onClick={handleLogout} className="w-full text-left px-2 py-1 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded">
+                          <button onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLogout();
+                          }} className="w-full text-left px-2 py-1 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded">
                             Logout
                           </button>
                         </div>
@@ -494,7 +614,11 @@ export default function HabitTracker() {
                   <option value="Relationships">Relationships</option>
                   <option value="Career">Career</option>
                 </select>
-                <button onClick={handleAddHabit} className="px-6 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md">
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAddHabit();
+                }} className="px-6 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md">
                   Add Habit
                 </button>
               </div>
@@ -507,7 +631,11 @@ export default function HabitTracker() {
               {categories.map((category) => (
                 <button
                   key={category}
-                  onClick={() => setFilterCategory(category)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setFilterCategory(category);
+                  }}
                   className={`px-3 py-1 rounded-full text-sm transition-all ${
                     filterCategory === category
                       ? "bg-blue-600 text-white"
