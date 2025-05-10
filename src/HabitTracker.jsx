@@ -4,6 +4,14 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { FaCalendarAlt, FaTrash, FaPlus, FaTimes } from "react-icons/fa";
 import { format } from "date-fns";
+import { 
+  CheckCircleIcon, 
+  InformationCircleIcon, 
+  QuestionMarkCircleIcon, 
+  ShieldCheckIcon, 
+  DocumentTextIcon, 
+  EnvelopeIcon 
+} from "@heroicons/react/24/outline";
 
 export default function HabitTracker() {
   const defaultHabits = [
@@ -16,7 +24,7 @@ export default function HabitTracker() {
 
   const navigate = useNavigate();
 
-  // State hooks
+  // State hooks - consolidated related states
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [habits, setHabits] = useState(() => JSON.parse(localStorage.getItem("habits")) || defaultHabits);
@@ -65,6 +73,16 @@ export default function HabitTracker() {
     return (habit.days.filter(Boolean).length / 7) * 100;
   }, []);
 
+  // Get theme classes based on dark mode
+  const getThemeClasses = useCallback((element) => {
+    switch(element) {
+      case "footer":
+        return `py-6 mt-10 ${darkMode ? "bg-gray-800 text-gray-200" : "bg-gray-100 text-gray-800"}`;
+      default:
+        return '';
+    }
+  }, [darkMode]);
+
   // Calculate week range
   useEffect(() => {
     if (selectedDate) {
@@ -76,15 +94,22 @@ export default function HabitTracker() {
     }
   }, [selectedDate]);
 
-  // Authentication check
+  // Consolidated effects
   useEffect(() => {
+    // Authentication check
     const isAuth = localStorage.getItem("isAuthenticated");
     if (isAuth) setIsAuthenticated(true);
     else navigate("/");
-  }, [navigate]);
-
-  // Load habit data for selected week
-  useEffect(() => {
+    
+    // Save to localStorage
+    localStorage.setItem("habits", JSON.stringify(habits));
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    localStorage.setItem("seenMilestones", JSON.stringify(seenMilestones));
+    
+    // Apply dark mode
+    document.body.className = darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black";
+    
+    // Load habit data for selected week
     const weekKey = getWeekKey(selectedDate);
     setHabits(prevHabits =>
       prevHabits.map(habit => ({
@@ -92,24 +117,8 @@ export default function HabitTracker() {
         days: habit.history[weekKey] || Array(7).fill(false),
       }))
     );
-  }, [selectedDate, getWeekKey]);
-
-  // Save habits, dark mode, and milestones to localStorage
-  useEffect(() => {
-    localStorage.setItem("habits", JSON.stringify(habits));
-  }, [habits]);
-
-  useEffect(() => {
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
-    document.body.className = darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black";
-  }, [darkMode]);
-
-  useEffect(() => {
-    localStorage.setItem("seenMilestones", JSON.stringify(seenMilestones));
-  }, [seenMilestones]);
-
-  // Check for streaks and milestones
-  useEffect(() => {
+    
+    // Check for streaks and milestones
     const updatedHabits = [...habits];
     let milestoneReached = false;
     let milestoneMessage = "";
@@ -127,7 +136,7 @@ export default function HabitTracker() {
       setModalMessage(milestoneMessage);
       setHabits(updatedHabits);
     }
-  }, [habits]);
+  }, [darkMode, habits, seenMilestones, navigate, selectedDate, getWeekKey]);
 
   // Event handlers
   const handleLogout = () => {
@@ -327,6 +336,15 @@ export default function HabitTracker() {
     </div>
   );
 
+  const FooterIcon = ({ Icon, label }) => (
+    <div className="flex flex-col items-center">
+      <div className={`p-2 rounded-full ${darkMode ? "bg-gray-700" : "bg-blue-100"}`}>
+        <Icon className="h-5 w-5 text-green-500" />
+      </div>
+      <span className="text-xs mt-1">{label}</span>
+    </div>
+  );
+
   return (
     <div className={`min-h-screen p-5 flex flex-col items-center ${
       darkMode
@@ -343,7 +361,7 @@ export default function HabitTracker() {
           <div className="flex items-center gap-2">
             {/* Mobile controls */}
             <div className="relative md:hidden flex items-center">
-              {/* Dark mode toggle - UPDATED for dark mode */}
+              {/* Dark mode toggle */}
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className={`mr-2 px-3 py-2 rounded transition-all hover:opacity-90 shadow-md ${
@@ -356,7 +374,7 @@ export default function HabitTracker() {
                 {darkMode ? "☀" : "🌙"}
               </button>
 
-              {/* Menu button - UPDATED for dark mode */}
+              {/* Menu button */}
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90 shadow-md ${
@@ -537,6 +555,35 @@ export default function HabitTracker() {
           </div>
         )}
       </div>
+
+      {/* Footer with Updated Navigation */}
+      <footer className={getThemeClasses("footer")}>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center">
+            {/* Logo */}
+            <div className="flex items-center gap-2 mb-4">
+              <div className="bg-green-500 text-white p-1 rounded-full">
+                <CheckCircleIcon className="h-4 w-4" />
+              </div>
+              <span className="font-bold">HabitTracker</span>
+            </div>
+            
+            {/* Footer Navigation */}
+            <div className="flex justify-center space-x-8 mb-4 w-full max-w-md">
+              <FooterIcon Icon={InformationCircleIcon} label="About" />
+              <FooterIcon Icon={QuestionMarkCircleIcon} label="FAQ" />
+              <FooterIcon Icon={ShieldCheckIcon} label="Privacy" />
+              <FooterIcon Icon={DocumentTextIcon} label="Terms" />
+              <FooterIcon Icon={EnvelopeIcon} label="Contact" />
+            </div>
+            
+            {/* Copyright */}
+            <div className="text-center">
+              <p className="text-sm">&copy; {new Date().getFullYear()} HabitTracker. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
