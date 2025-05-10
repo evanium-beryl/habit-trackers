@@ -77,7 +77,7 @@ export default function HabitTracker() {
   const getThemeClasses = useCallback((element) => {
     switch(element) {
       case "footer":
-        return `py-6 mt-10 ${darkMode ? "bg-gray-800 text-gray-200" : "bg-gray-100 text-gray-800"}`;
+        return `${darkMode ? "bg-gray-800 text-gray-200" : "bg-gray-100 text-gray-800"}`;
       default:
         return '';
     }
@@ -346,218 +346,221 @@ export default function HabitTracker() {
   );
 
   return (
-    <div className={`min-h-screen p-5 flex flex-col items-center ${
+    <div className={`min-h-screen flex flex-col ${
       darkMode
         ? "bg-gray-900 text-white"
         : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-black"
     }`}>
       {isModalVisible && <Modal message={modalMessage} onClose={() => setIsModalVisible(false)} />}
 
-      <div className="w-full max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Habit Tracker</h1>
+      <main className="flex-grow p-5 flex flex-col items-center">
+        <div className="w-full max-w-6xl">
+          {/* [All existing content including headers, habit cards, etc. stays the same] */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Habit Tracker</h1>
 
-          {/* Controls: Mobile (dropdown) and Desktop (inline) */}
-          <div className="flex items-center gap-2">
-            {/* Mobile controls */}
-            <div className="relative md:hidden flex items-center">
-              {/* Dark mode toggle */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`mr-2 px-3 py-2 rounded transition-all hover:opacity-90 shadow-md ${
-                  darkMode 
-                    ? "bg-gray-700 text-white hover:bg-gray-600" 
-                    : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900"
-                }`}
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {darkMode ? "☀" : "🌙"}
-              </button>
+            {/* Controls: Mobile (dropdown) and Desktop (inline) */}
+            <div className="flex items-center gap-2">
+              {/* Mobile controls */}
+              <div className="relative md:hidden flex items-center">
+                {/* Dark mode toggle */}
+                <button
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={`mr-2 px-3 py-2 rounded transition-all hover:opacity-90 shadow-md ${
+                    darkMode 
+                      ? "bg-gray-700 text-white hover:bg-gray-600" 
+                      : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900"
+                  }`}
+                  aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                >
+                  {darkMode ? "☀" : "🌙"}
+                </button>
 
-              {/* Menu button */}
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90 shadow-md ${
-                  darkMode 
-                    ? "bg-gray-700 text-white hover:bg-gray-600" 
-                    : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900"
-                }`}
-                aria-label="Menu"
-                aria-expanded={isDropdownOpen}
-              >
-                👤
-              </button>
-              
-              {/* Mobile dropdown menu */}
-              <div className="relative">
-                {isDropdownOpen && (
-                  <div className="fixed inset-0 z-40 bg-black bg-opacity-50" onClick={() => setIsDropdownOpen(false)}></div>
-                )}
-                
-                <div className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
-                  isDropdownOpen ? "translate-x-0" : "translate-x-full"
-                }`}>
-                  <div className="flex flex-col h-full">
-                    {/* Header with close button */}
-                    <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                      <h3 className="font-bold text-gray-800 dark:text-white">Menu</h3>
-                      <button
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                        aria-label="Close menu"
-                      >
-                        <FaTimes size={20} className="text-gray-600 dark:text-gray-300" />
-                      </button>
-                    </div>
-                    
-                    {/* Menu items */}
-                    <div className="flex-1 overflow-y-auto">
-                      <button onClick={resetStreaks} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
-                        Reset Streaks
-                      </button>
-                      <button onClick={resetHabits} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
-                        Reset Habits
-                      </button>
-                      <button onClick={() => { 
-                        setIsAddingHabit(!isAddingHabit); 
-                        setIsDropdownOpen(false); 
-                      }} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
-                        {isAddingHabit ? "Cancel" : "Add Habit"}
-                      </button>
-                      <button onClick={handleLogout} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-white">
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Desktop controls */}
-            <div className="hidden md:flex gap-2 items-center">
-              <button onClick={() => setDarkMode(!darkMode)} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
-                {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-              </button>
-              <button onClick={resetStreaks} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
-                Reset Streaks
-              </button>
-              <button onClick={resetHabits} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
-                Reset Habits
-              </button>
-              <button onClick={() => setIsAddingHabit(!isAddingHabit)} className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center">
-                {isAddingHabit ? (<><FaTimes className="mr-1" /> Cancel</>) : (<><FaPlus className="mr-1" /> Add Habit</>)}
-              </button>
-
-              {/* User menu dropdown */}
-              <div className="relative">
-                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600" aria-label="User menu" aria-expanded={isDropdownOpen}>
+                {/* Menu button */}
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90 shadow-md ${
+                    darkMode 
+                      ? "bg-gray-700 text-white hover:bg-gray-600" 
+                      : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900"
+                  }`}
+                  aria-label="Menu"
+                  aria-expanded={isDropdownOpen}
+                >
                   👤
                 </button>
-                {isDropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)}></div>
-                    <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md z-50">
-                      <button onClick={() => setIsDropdownOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Close menu">
-                        <FaTimes size={16} />
-                      </button>
-                      <div className="px-4 py-2 pb-4">
-                        <button onClick={handleLogout} className="w-full text-left px-2 py-1 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded">
+                
+                {/* Mobile dropdown menu */}
+                <div className="relative">
+                  {isDropdownOpen && (
+                    <div className="fixed inset-0 z-40 bg-black bg-opacity-50" onClick={() => setIsDropdownOpen(false)}></div>
+                  )}
+                  
+                  <div className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+                    isDropdownOpen ? "translate-x-0" : "translate-x-full"
+                  }`}>
+                    <div className="flex flex-col h-full">
+                      {/* Header with close button */}
+                      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                        <h3 className="font-bold text-gray-800 dark:text-white">Menu</h3>
+                        <button
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                          aria-label="Close menu"
+                        >
+                          <FaTimes size={20} className="text-gray-600 dark:text-gray-300" />
+                        </button>
+                      </div>
+                      
+                      {/* Menu items */}
+                      <div className="flex-1 overflow-y-auto">
+                        <button onClick={resetStreaks} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
+                          Reset Streaks
+                        </button>
+                        <button onClick={resetHabits} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
+                          Reset Habits
+                        </button>
+                        <button onClick={() => { 
+                          setIsAddingHabit(!isAddingHabit); 
+                          setIsDropdownOpen(false); 
+                        }} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white">
+                          {isAddingHabit ? "Cancel" : "Add Habit"}
+                        </button>
+                        <button onClick={handleLogout} className="w-full text-left px-4 py-4 text-base hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-white">
                           Logout
                         </button>
                       </div>
                     </div>
-                  </>
-                )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop controls */}
+              <div className="hidden md:flex gap-2 items-center">
+                <button onClick={() => setDarkMode(!darkMode)} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md" aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+                  {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+                </button>
+                <button onClick={resetStreaks} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
+                  Reset Streaks
+                </button>
+                <button onClick={resetHabits} className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md">
+                  Reset Habits
+                </button>
+                <button onClick={() => setIsAddingHabit(!isAddingHabit)} className="px-4 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md flex items-center">
+                  {isAddingHabit ? (<><FaTimes className="mr-1" /> Cancel</>) : (<><FaPlus className="mr-1" /> Add Habit</>)}
+                </button>
+
+                {/* User menu dropdown */}
+                <div className="relative">
+                  <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600" aria-label="User menu" aria-expanded={isDropdownOpen}>
+                    👤
+                  </button>
+                  {isDropdownOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)}></div>
+                      <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md z-50">
+                        <button onClick={() => setIsDropdownOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Close menu">
+                          <FaTimes size={16} />
+                        </button>
+                        <div className="px-4 py-2 pb-4">
+                          <button onClick={handleLogout} className="w-full text-left px-2 py-1 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded">
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-900"} text-lg font-medium italic`}>
-          Stay consistent, build better habits, and track your progress effortlessly with our habit tracker. Small steps, big results!
-        </p>
+          <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-900"} text-lg font-medium italic`}>
+            Stay consistent, build better habits, and track your progress effortlessly with our habit tracker. Small steps, big results!
+          </p>
 
-        {/* Add new habit form */}
-        {isAddingHabit && (
-          <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium mb-3 text-gray-800 dark:text-white">Add New Habit</h3>
-            <div className="flex flex-col md:flex-row gap-3">
-              <input type="text" value={newHabit} onChange={(e) => setNewHabit(e.target.value)} className="px-4 py-2 border rounded w-full text-black" placeholder="Enter new habit" aria-label="New habit name" />
-              <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="px-4 py-2 border rounded text-black" aria-label="Select category">
-                <option value="">Select Category</option>
-                <option value="Health">Health</option>
-                <option value="Productivity">Productivity</option>
-                <option value="Personal Growth">Personal Growth</option>
-                <option value="Fitness">Fitness</option>
-                <option value="Relationships">Relationships</option>
-                <option value="Career">Career</option>
-              </select>
-              <button onClick={handleAddHabit} className="px-6 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md">
-                Add Habit
-              </button>
+          {/* Add new habit form */}
+          {isAddingHabit && (
+            <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+              <h3 className="text-lg font-medium mb-3 text-gray-800 dark:text-white">Add New Habit</h3>
+              <div className="flex flex-col md:flex-row gap-3">
+                <input type="text" value={newHabit} onChange={(e) => setNewHabit(e.target.value)} className="px-4 py-2 border rounded w-full text-black" placeholder="Enter new habit" aria-label="New habit name" />
+                <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="px-4 py-2 border rounded text-black" aria-label="Select category">
+                  <option value="">Select Category</option>
+                  <option value="Health">Health</option>
+                  <option value="Productivity">Productivity</option>
+                  <option value="Personal Growth">Personal Growth</option>
+                  <option value="Fitness">Fitness</option>
+                  <option value="Relationships">Relationships</option>
+                  <option value="Career">Career</option>
+                </select>
+                <button onClick={handleAddHabit} className="px-6 py-2 rounded bg-blue-600 text-white transition-all hover:bg-blue-500 shadow-md">
+                  Add Habit
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Category filters */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setFilterCategory(category)}
+                  className={`px-3 py-1 rounded-full text-sm transition-all ${
+                    filterCategory === category
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
             </div>
           </div>
-        )}
 
-        {/* Category filters */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setFilterCategory(category)}
-                className={`px-3 py-1 rounded-full text-sm transition-all ${
-                  filterCategory === category
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+          {/* Stats summary */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white">Total Habits</h3>
+              <p className="text-3xl font-bold text-blue-600">{habits.length}</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white">Active Streaks</h3>
+              <p className="text-3xl font-bold text-green-600">{habits.filter(h => h.streak > 0).length}</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white">Longest Streak</h3>
+              <p className="text-3xl font-bold text-amber-500">{Math.max(...habits.map(h => h.streak), 0)}🔥</p>
+            </div>
           </div>
+
+          {/* Habit cards */}
+          {filteredHabits.length === 0 ? (
+            <div className="text-center p-10 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                {habits.length === 0
+                  ? "No habits found. Add your first habit to get started!"
+                  : "No habits match the selected category filter."}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredHabits.map((habit, habitIndex) => (
+                <HabitCard
+                  key={habitIndex}
+                  habit={habit}
+                  habitIndex={habits.indexOf(habit)}
+                />
+              ))}
+            </div>
+          )}
         </div>
+      </main>
 
-        {/* Stats summary */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Total Habits</h3>
-            <p className="text-3xl font-bold text-blue-600">{habits.length}</p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Active Streaks</h3>
-            <p className="text-3xl font-bold text-green-600">{habits.filter(h => h.streak > 0).length}</p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Longest Streak</h3>
-            <p className="text-3xl font-bold text-amber-500">{Math.max(...habits.map(h => h.streak), 0)}🔥</p>
-          </div>
-        </div>
-
-        {/* Habit cards */}
-        {filteredHabits.length === 0 ? (
-          <div className="text-center p-10 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              {habits.length === 0
-                ? "No habits found. Add your first habit to get started!"
-                : "No habits match the selected category filter."}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredHabits.map((habit, habitIndex) => (
-              <HabitCard
-                key={habitIndex}
-                habit={habit}
-                habitIndex={habits.indexOf(habit)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Footer with Updated Navigation */}
-      <footer className={getThemeClasses("footer")}>
+      {/* Updated Footer as a semantic HTML footer element */}
+      <footer className={`w-full py-6 mt-auto ${getThemeClasses("footer")}`} role="contentinfo">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center">
             {/* Logo */}
@@ -569,13 +572,15 @@ export default function HabitTracker() {
             </div>
             
             {/* Footer Navigation */}
-            <div className="flex justify-center space-x-8 mb-4 w-full max-w-md">
-              <FooterIcon Icon={InformationCircleIcon} label="About" />
-              <FooterIcon Icon={QuestionMarkCircleIcon} label="FAQ" />
-              <FooterIcon Icon={ShieldCheckIcon} label="Privacy" />
-              <FooterIcon Icon={DocumentTextIcon} label="Terms" />
-              <FooterIcon Icon={EnvelopeIcon} label="Contact" />
-            </div>
+            <nav aria-label="Footer Navigation">
+              <ul className="flex justify-center space-x-8 mb-4 w-full max-w-md">
+                <li><a href="#" className="hover:text-green-500"><FooterIcon Icon={InformationCircleIcon} label="About" /></a></li>
+                <li><a href="#" className="hover:text-green-500"><FooterIcon Icon={QuestionMarkCircleIcon} label="FAQ" /></a></li>
+                <li><a href="#" className="hover:text-green-500"><FooterIcon Icon={ShieldCheckIcon} label="Privacy" /></a></li>
+                <li><a href="#" className="hover:text-green-500"><FooterIcon Icon={DocumentTextIcon} label="Terms" /></a></li>
+                <li><a href="#" className="hover:text-green-500"><FooterIcon Icon={EnvelopeIcon} label="Contact" /></a></li>
+              </ul>
+            </nav>
             
             {/* Copyright */}
             <div className="text-center">
