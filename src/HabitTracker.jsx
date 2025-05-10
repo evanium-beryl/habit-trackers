@@ -81,7 +81,10 @@ export default function HabitTracker() {
       startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Sunday
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
-      return `${format(startOfWeek, "MMM dd")} - ${format(endOfWeek, "MMM dd")}`;
+      return `${format(startOfWeek, "MMM dd")} - ${format(
+        endOfWeek,
+        "MMM dd"
+      )}`;
     };
 
     if (selectedDate) {
@@ -254,7 +257,11 @@ export default function HabitTracker() {
 
   const resetHabits = () => {
     // Show confirmation before resetting habits
-    if (window.confirm("Are you sure you want to reset to default habits? This will erase all your custom habits and progress.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to reset to default habits? This will erase all your custom habits and progress."
+      )
+    ) {
       // Remove habits from localStorage
       localStorage.removeItem("habits");
 
@@ -303,18 +310,19 @@ export default function HabitTracker() {
   };
 
   // Get all unique categories for filtering
-  const categories = ["All", ...new Set(habits.map(habit => habit.category))];
+  const categories = ["All", ...new Set(habits.map((habit) => habit.category))];
 
   // Filter habits based on selected category
-  const filteredHabits = filterCategory === "All" 
-    ? habits 
-    : habits.filter(habit => habit.category === filterCategory);
+  const filteredHabits =
+    filterCategory === "All"
+      ? habits
+      : habits.filter((habit) => habit.category === filterCategory);
 
   // UI Components
   const Modal = ({ message, onClose }) => (
     <div className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-80 relative">
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
           aria-label="Close"
@@ -381,8 +389,10 @@ export default function HabitTracker() {
       )}
       <div className="flex justify-between items-center">
         <span className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center">
-          <span className="mr-1">Streak:</span> 
-          <span className="text-amber-500 font-bold text-lg">{habit.streak}</span> 
+          <span className="mr-1">Streak:</span>
+          <span className="text-amber-500 font-bold text-lg">
+            {habit.streak}
+          </span>
           <span className="ml-1">🔥</span>
         </span>
         <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -390,25 +400,25 @@ export default function HabitTracker() {
         </p>
       </div>
       <div className="flex justify-between mt-4">
-        {"Sun Mon Tue Wed Thu Fri Sat"
-          .split(" ")
-          .map((day, dayIndex) => (
-            <button
-              key={dayIndex}
-              onClick={() => toggleDay(habitIndex, dayIndex)}
-              className={`w-10 h-10 rounded-full text-xs font-medium 
+        {"Sun Mon Tue Wed Thu Fri Sat".split(" ").map((day, dayIndex) => (
+          <button
+            key={dayIndex}
+            onClick={() => toggleDay(habitIndex, dayIndex)}
+            className={`w-10 h-10 rounded-full text-xs font-medium 
                 transition-all flex items-center justify-center
                 ${
                   habit.days[dayIndex]
                     ? "bg-green-500 text-white shadow-md"
                     : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                 }`}
-              aria-label={`${day} - ${habit.days[dayIndex] ? "Completed" : "Not completed"}`}
-              aria-pressed={habit.days[dayIndex]}
-            >
-              {day.slice(0, 1)}
-            </button>
-          ))}
+            aria-label={`${day} - ${
+              habit.days[dayIndex] ? "Completed" : "Not completed"
+            }`}
+            aria-pressed={habit.days[dayIndex]}
+          >
+            {day.slice(0, 1)}
+          </button>
+        ))}
       </div>
       <div className="mt-4 bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
         <div
@@ -419,7 +429,8 @@ export default function HabitTracker() {
           aria-valuemin="0"
           aria-valuemax="100"
         >
-          {calculateProgress(habit) > 15 && `${Math.round(calculateProgress(habit))}%`}
+          {calculateProgress(habit) > 15 &&
+            `${Math.round(calculateProgress(habit))}%`}
         </div>
       </div>
       {calculateProgress(habit) < 15 && (
@@ -439,16 +450,16 @@ export default function HabitTracker() {
       }`}
     >
       {isModalVisible && (
-        <Modal 
-          message={modalMessage} 
-          onClose={() => setIsModalVisible(false)} 
+        <Modal
+          message={modalMessage}
+          onClose={() => setIsModalVisible(false)}
         />
       )}
 
       <div className="w-full max-w-6xl">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Habit Tracker</h1>
-          
+
           {/* Responsive controls - mobile in dropdown, desktop inline */}
           <div className="flex items-center gap-2">
             {/* Mobile controls (dropdown) */}
@@ -457,11 +468,13 @@ export default function HabitTracker() {
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className="mr-2 px-3 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label={
+                  darkMode ? "Switch to light mode" : "Switch to dark mode"
+                }
               >
                 {darkMode ? "☀" : "🌙"}
               </button>
-            
+
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
@@ -470,20 +483,22 @@ export default function HabitTracker() {
               >
                 👤
               </button>
-              
-              {/* Mobile dropdown menu with IMPROVED close button overlay */}
+
+              {/* Mobile dropdown menu with improved positioning and visibility */}
               {isDropdownOpen && (
                 <>
                   {/* Overlay for closing the dropdown when clicking outside */}
-                  <div 
+                  <div
                     className="fixed inset-0 z-40"
                     onClick={() => setIsDropdownOpen(false)}
                   ></div>
-                  
-                  {/* Dropdown menu */}
-                  <div className="absolute right-0 mt-16 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50 pt-2">
-                    {/* IMPROVED close button - larger, more visible, better positioned */}
-                    <div className="flex justify-end p-2">
+
+                  {/* Dropdown menu - FIXED: positioned lower with top-20 instead of mt-16 */}
+                  <div className="absolute right-0 top-20 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50">
+                    {/* Clear menu label removed to avoid confusion */}
+
+                    {/* Improved close button - larger and more visible at the top */}
+                    <div className="flex justify-end p-2 border-b border-gray-200 dark:border-gray-700">
                       <button
                         onClick={() => setIsDropdownOpen(false)}
                         className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-md flex items-center justify-center w-8 h-8"
@@ -492,11 +507,7 @@ export default function HabitTracker() {
                         <FaTimes size={16} />
                       </button>
                     </div>
-                    
-                    <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                      <span className="font-medium">Menu</span>
-                    </div>
-                    
+
                     <button
                       onClick={resetStreaks}
                       className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
@@ -511,7 +522,7 @@ export default function HabitTracker() {
                     </button>
                     <button
                       onClick={() => {
-                        setIsAddingHabit(!isAddingHabit); 
+                        setIsAddingHabit(!isAddingHabit);
                         setIsDropdownOpen(false);
                       }}
                       className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 flex items-center"
@@ -528,13 +539,15 @@ export default function HabitTracker() {
                 </>
               )}
             </div>
-            
+
             {/* Desktop controls (inline) */}
             <div className="hidden md:flex gap-2 items-center">
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className="px-4 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label={
+                  darkMode ? "Switch to light mode" : "Switch to dark mode"
+                }
               >
                 {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
               </button>
@@ -564,7 +577,7 @@ export default function HabitTracker() {
                   </>
                 )}
               </button>
-              
+
               {/* User Icon and Dropdown */}
               <div className="relative">
                 <button
@@ -578,11 +591,11 @@ export default function HabitTracker() {
                 {isDropdownOpen && (
                   <>
                     {/* Overlay for closing the dropdown when clicking outside */}
-                    <div 
+                    <div
                       className="fixed inset-0 z-40"
                       onClick={() => setIsDropdownOpen(false)}
                     ></div>
-                    
+
                     {/* Dropdown menu */}
                     <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg shadow-md z-50">
                       {/* Close button in the top-right corner */}
@@ -593,7 +606,7 @@ export default function HabitTracker() {
                       >
                         <FaTimes size={16} />
                       </button>
-                      
+
                       <div className="px-4 py-2 pb-4">
                         <button
                           onClick={handleLogout}
@@ -609,7 +622,7 @@ export default function HabitTracker() {
             </div>
           </div>
         </div>
-        
+
         <p
           className={`text-center mb-6 ${
             darkMode ? "text-gray-300" : "text-gray-900"
@@ -621,7 +634,9 @@ export default function HabitTracker() {
 
         {isAddingHabit && (
           <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium mb-3 text-gray-800 dark:text-white">Add New Habit</h3>
+            <h3 className="text-lg font-medium mb-3 text-gray-800 dark:text-white">
+              Add New Habit
+            </h3>
             <div className="flex flex-col md:flex-row gap-3">
               <input
                 type="text"
@@ -658,7 +673,7 @@ export default function HabitTracker() {
         {/* Category filter */}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
-            {categories.map(category => (
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setFilterCategory(category)}
@@ -677,19 +692,25 @@ export default function HabitTracker() {
         {/* Stats summary */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Total Habits</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+              Total Habits
+            </h3>
             <p className="text-3xl font-bold text-blue-600">{habits.length}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Active Streaks</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+              Active Streaks
+            </h3>
             <p className="text-3xl font-bold text-green-600">
-              {habits.filter(h => h.streak > 0).length}
+              {habits.filter((h) => h.streak > 0).length}
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white">Longest Streak</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+              Longest Streak
+            </h3>
             <p className="text-3xl font-bold text-amber-500">
-              {Math.max(...habits.map(h => h.streak), 0)}🔥
+              {Math.max(...habits.map((h) => h.streak), 0)}🔥
             </p>
           </div>
         </div>
@@ -697,18 +718,18 @@ export default function HabitTracker() {
         {filteredHabits.length === 0 ? (
           <div className="text-center p-10 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              {habits.length === 0 ? 
-                "No habits found. Add your first habit to get started!" : 
-                "No habits match the selected category filter."}  
+              {habits.length === 0
+                ? "No habits found. Add your first habit to get started!"
+                : "No habits match the selected category filter."}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredHabits.map((habit, habitIndex) => (
-              <HabitCard 
-                key={habitIndex} 
-                habit={habit} 
-                habitIndex={habits.indexOf(habit)} 
+              <HabitCard
+                key={habitIndex}
+                habit={habit}
+                habitIndex={habits.indexOf(habit)}
               />
             ))}
           </div>
