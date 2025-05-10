@@ -463,82 +463,84 @@ export default function HabitTracker() {
           {/* Responsive controls - mobile in dropdown, desktop inline */}
           <div className="flex items-center gap-2">
             {/* Mobile controls (dropdown) */}
-            <div className="relative md:hidden flex items-center">
-              {/* Dark mode button moved outside dropdown for mobile */}
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="mr-2 px-3 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
-                aria-label={
-                  darkMode ? "Switch to light mode" : "Switch to dark mode"
-                }
-              >
-                {darkMode ? "☀" : "🌙"}
-              </button>
+<div className="relative md:hidden flex items-center">
+  {/* Dark mode button moved outside dropdown for mobile */}
+  <button
+    onClick={() => setDarkMode(!darkMode)}
+    className="mr-2 px-3 py-2 rounded bg-gray-700 text-white transition-all hover:bg-gray-600 shadow-md"
+    aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+  >
+    {darkMode ? "☀" : "🌙"}
+  </button>
 
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
-                aria-label="Menu"
-                aria-expanded={isDropdownOpen}
-              >
-                👤
-              </button>
-
-              {/* Mobile dropdown menu with improved positioning and visibility */}
-              {isDropdownOpen && (
-                <>
-                  {/* Overlay for closing the dropdown when clicking outside */}
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsDropdownOpen(false)}
-                  ></div>
-
-                  {/* Dropdown menu - FIXED: positioned lower with top-20 instead of mt-16 */}
-                  <div className="absolute right-0 top-16 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-md z-50">
-                    {/* Clear menu label removed to avoid confusion */}
-
-                    {/* Improved close button - larger and more visible at the top */}
-                    <div className="flex justify-end p-2 border-b border-gray-200 dark:border-gray-700">
-                      <button
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-md flex items-center justify-center w-8 h-8"
-                        aria-label="Close menu"
-                      >
-                        <FaTimes size={16} />
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={resetStreaks}
-                      className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
-                    >
-                      Reset Streaks
-                    </button>
-                    <button
-                      onClick={resetHabits}
-                      className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
-                    >
-                      Reset Habits
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsAddingHabit(!isAddingHabit);
-                        setIsDropdownOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 flex items-center"
-                    >
-                      {isAddingHabit ? "Cancel" : "Add Habit"}
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+  <button
+    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+    className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-600"
+    aria-label="Menu"
+    aria-expanded={isDropdownOpen}
+  >
+    👤
+  </button>
+  
+  {/* Mobile dropdown menu with smooth animation - always rendered but conditionally visible */}
+  <>
+    {/* Overlay for closing the dropdown when clicking outside */}
+    <div 
+      className={`fixed inset-0 z-40 transition-opacity duration-300 ${
+        isDropdownOpen ? "opacity-50 bg-black" : "opacity-0 pointer-events-none"
+      }`}
+      onClick={() => setIsDropdownOpen(false)}
+    ></div>
+    
+    {/* Dropdown menu with slide-in animation */}
+    <div 
+      className={`absolute right-0 top-14 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white rounded-lg shadow-lg z-50 transition-all duration-300 transform ${
+        isDropdownOpen 
+          ? "translate-x-0 opacity-100" 
+          : "translate-x-full opacity-0 pointer-events-none"
+      }`}
+    >
+      {/* Improved close button at the top */}
+      <div className="flex justify-end p-2 border-b border-gray-200 dark:border-gray-700">
+        <button
+          onClick={() => setIsDropdownOpen(false)}
+          className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-md flex items-center justify-center w-8 h-8 transition-transform duration-200 hover:scale-110"
+          aria-label="Close menu"
+        >
+          <FaTimes size={16} />
+        </button>
+      </div>
+      
+      <button
+        onClick={resetStreaks}
+        className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200"
+      >
+        Reset Streaks
+      </button>
+      <button
+        onClick={resetHabits}
+        className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200"
+      >
+        Reset Habits
+      </button>
+      <button
+        onClick={() => {
+          setIsAddingHabit(!isAddingHabit); 
+          setIsDropdownOpen(false);
+        }}
+        className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200"
+      >
+        {isAddingHabit ? "Cancel" : "Add Habit"}
+      </button>
+      <button
+        onClick={handleLogout}
+        className="w-full text-left px-4 py-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+      >
+        Logout
+      </button>
+    </div>
+  </>
+</div>
 
             {/* Desktop controls (inline) */}
             <div className="hidden md:flex gap-2 items-center">
