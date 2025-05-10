@@ -343,19 +343,27 @@ export default function HabitTracker() {
           <div className="flex items-center gap-2">
             {/* Mobile controls */}
             <div className="relative md:hidden flex items-center">
-              {/* Dark mode toggle - UPDATED with gradient background */}
+              {/* Dark mode toggle - UPDATED for dark mode */}
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className="mr-2 px-3 py-2 rounded bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900 transition-all hover:opacity-90 shadow-md"
+                className={`mr-2 px-3 py-2 rounded transition-all hover:opacity-90 shadow-md ${
+                  darkMode 
+                    ? "bg-gray-700 text-white hover:bg-gray-600" 
+                    : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900"
+                }`}
                 aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {darkMode ? "☀" : "🌙"}
               </button>
 
-              {/* Menu button - UPDATED with gradient background */}
+              {/* Menu button - UPDATED for dark mode */}
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900 flex items-center justify-center hover:opacity-90 shadow-md"
+                className={`w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90 shadow-md ${
+                  darkMode 
+                    ? "bg-gray-700 text-white hover:bg-gray-600" 
+                    : "bg-gradient-to-r from-blue-100 via-yellow-100 to-white text-gray-900"
+                }`}
                 aria-label="Menu"
                 aria-expanded={isDropdownOpen}
               >
