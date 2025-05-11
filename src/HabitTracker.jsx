@@ -301,7 +301,7 @@ export default function HabitTracker() {
 
   // Optimize habit card component with React.memo
   const HabitCard = useCallback(({ habit, habitIndex }) => (
-    <div className="bg-white dark:bg-gray-800 p-5 shadow-lg rounded-lg transition-all hover:shadow-xl" role="region" aria-label={`${habit.name} habit card`}>
+    <div className="bg-gradient-to-br from-blue-50/30 via-white to-yellow-50/30 dark:bg-gradient-to-br dark:from-gray-850 dark:via-gray-800 dark:to-gray-750 p-5 shadow-lg rounded-lg transition-all hover:shadow-xl" role="region" aria-label={`${habit.name} habit card`}>
       <div className="flex justify-between items-center mb-3">
         <h2 className="font-semibold text-lg text-gray-800 dark:text-white flex items-center">
           {habit.name}{" "}
@@ -650,15 +650,15 @@ export default function HabitTracker() {
 
           {/* Stats summary */}
           <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          <div className="bg-gradient-to-tr from-blue-50/30 via-white to-yellow-50/30 dark:bg-gradient-to-tr dark:from-gray-850 dark:via-gray-800 dark:to-gray-750 p-4 rounded-lg shadow-md">
               <h3 className="text-lg font-medium text-gray-800 dark:text-white">Total Habits</h3>
               <p className="text-3xl font-bold text-blue-600">{habits.length}</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <div className="bg-gradient-to-tr from-blue-50/30 via-white to-yellow-50/30 dark:bg-gradient-to-tr dark:from-gray-850 dark:via-gray-800 dark:to-gray-750 p-4 rounded-lg shadow-md">
               <h3 className="text-lg font-medium text-gray-800 dark:text-white">Active Streaks</h3>
               <p className="text-3xl font-bold text-green-600">{habits.filter(h => h.streak > 0).length}</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <div className="bg-gradient-to-tr from-blue-50/30 via-white to-yellow-50/30 dark:bg-gradient-to-tr dark:from-gray-850 dark:via-gray-800 dark:to-gray-750 p-4 rounded-lg shadow-md">
               <h3 className="text-lg font-medium text-gray-800 dark:text-white">Longest Streak</h3>
               <p className="text-3xl font-bold text-amber-500">{Math.max(...habits.map(h => h.streak), 0)}🔥</p>
             </div>
