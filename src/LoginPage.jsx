@@ -242,32 +242,27 @@ export default function LoginPage() {
       return;
     }
     
-    // Successful login - simulate API call
-    setTimeout(() => {
-      // In a real app, you'd set authentication tokens here
-      localStorage.setItem("currentUser", JSON.stringify({
-        username: user.username,
-        email: user.email
-      }));
-      
-      // Set isAuthenticated flag in localStorage - THIS IS THE KEY FIX
-      localStorage.setItem("isAuthenticated", "true");
-      
-      setUiState(prev => ({ 
-        ...prev, 
-        isSubmitting: false,
-        showAlert: true,
-        alertType: "success",
-        alertMessage: "Login successful! Redirecting to habit tracker..."
-      }));
-      
-      // Redirect to habit-tracker after a brief delay
-      setTimeout(() => {
-        // Force the navigation with replace to ensure it works on all devices
-        navigate("/habit-tracker", { replace: true });
-      }, 1000);
-    }, 800);
-  }, [formData, navigate, validateForm]);
+    // Successful login
+    localStorage.setItem("currentUser", JSON.stringify({
+      id: user.id,
+      username: user.username,
+      email: user.email
+    }));
+    
+    // Set isAuthenticated flag in localStorage
+    localStorage.setItem("isAuthenticated", "true");
+    
+    setUiState(prev => ({ 
+      ...prev, 
+      isSubmitting: false,
+      showAlert: true,
+      alertType: "success",
+      alertMessage: "Login successful! Redirecting to habit tracker..."
+    }));
+    
+    // Navigate immediately
+    navigate("/habit-tracker", { replace: true });
+}, [formData, navigate, validateForm]);
 
   // Dismiss notification
   const dismissNotification = useCallback(() => {

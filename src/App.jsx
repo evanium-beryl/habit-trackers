@@ -5,9 +5,13 @@ import LoginPage from "./LoginPage";
 import HabitTracker from "./HabitTracker";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    localStorage.getItem("isAuthenticated") === "true"
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // More robust initial authentication check
+    const user = localStorage.getItem("currentUser");
+    const authFlag = localStorage.getItem("isAuthenticated");
+    return user !== null && authFlag === "true";
+  });
+
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -21,10 +25,21 @@ function App() {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
+  // Add listener for authentication changes
   useEffect(() => {
-    const authStatus = localStorage.getItem("isAuthenticated") === "true";
-    setIsAuthenticated(authStatus);
-  }, []);  
+    const handleStorageChange = () => {
+      const user = localStorage.getItem("currentUser");
+      const authFlag = localStorage.getItem("isAuthenticated");
+      setIsAuthenticated(user !== null && authFlag === "true");
+    };
+
+    // Listen for storage changes in other tabs
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <Router>
@@ -39,7 +54,16 @@ function App() {
         />
         <Route
           path="/habit-tracker"
-          element={isAuthenticated ? <HabitTracker darkMode={darkMode} setDarkMode={setDarkMode} /> : <Navigate to="/" />}
+          element={
+            isAuthenticated ? (
+              <HabitTracker 
+                darkMode={darkMode} 
+                setDarkMode={setDarkMode} 
+              />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
       </Routes>
     </Router>
