@@ -55,17 +55,12 @@ const formUtils = {
   }
 };
 
-export default function LoginPage() {
+export default function LoginPage({ darkMode, setDarkMode, onLogin }) {
   const navigate = useNavigate();
   const location = useLocation();
   const justRegistered = location.state?.justRegistered || false;
   
-  // State management
-  const [darkMode, setDarkMode] = useState(() => {
-    const stored = localStorage.getItem("darkMode");
-    return stored ? JSON.parse(stored) : false;
-  });
-  
+  // Form state management
   const [formData, setFormData] = useState({
     [FIELDS.EMAIL]: "",
     [FIELDS.PASSWORD]: ""
@@ -95,10 +90,9 @@ export default function LoginPage() {
   // Use the patterns from our utility object
   const { email: emailPattern } = formUtils.patterns;
 
-  // Effect to apply dark mode
+  // Effect to apply dark mode (now handled by App.js)
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
   // Effect to clear location state after showing alert
@@ -119,7 +113,7 @@ export default function LoginPage() {
   // Toggle dark mode handler
   const handleDarkModeToggle = useCallback(() => {
     setDarkMode(prevMode => !prevMode);
-  }, []);
+  }, [setDarkMode]);
 
   // Centralized error handling function
   const handleError = useCallback((message, field) => {
@@ -260,9 +254,17 @@ export default function LoginPage() {
       alertMessage: "Login successful! Redirecting to habit tracker..."
     }));
     
-    // Navigate immediately
-    navigate("/habit-tracker", { replace: true });
-}, [formData, navigate, validateForm]);
+    // Notify the parent component (App) about successful login
+    if (onLogin) {
+      onLogin();
+    }
+    
+    // Navigate after a short delay to show the success message
+    setTimeout(() => {
+      navigate("/habit-tracker", { replace: true });
+    }, 1500);
+    
+  }, [formData, navigate, validateForm, onLogin]);
 
   // Dismiss notification
   const dismissNotification = useCallback(() => {
