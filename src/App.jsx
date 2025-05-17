@@ -5,48 +5,35 @@ import LoginPage from "./LoginPage";
 import HabitTracker from "./HabitTracker";
 
 function App() {
-  // More robust authentication state management
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // Check both user object and auth flag on initial load
+    // More robust initial authentication check
     const user = localStorage.getItem("currentUser");
     const authFlag = localStorage.getItem("isAuthenticated");
     return user !== null && authFlag === "true";
   });
 
-  const [darkMode, setDarkMode] = useState(() => {
-    // Get dark mode preference from localStorage on initial load
-    const savedDarkMode = localStorage.getItem("darkMode");
-    return savedDarkMode ? JSON.parse(savedDarkMode) : false;
-  });
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    // Apply dark mode to document and save preference
-    document.documentElement.classList.toggle("dark", darkMode);
+    const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"));
+    if (savedDarkMode !== null) {
+      setDarkMode(savedDarkMode);
+    }
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
-  // Create login/logout handlers to pass to components
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem("currentUser");
-    localStorage.setItem("isAuthenticated", "false");
-    setIsAuthenticated(false);
-  };
-
-  // Listen for authentication changes (for multi-tab support)
+  // Add listener for authentication changes
   useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === "isAuthenticated" || e.key === "currentUser") {
-        const user = localStorage.getItem("currentUser");
-        const authFlag = localStorage.getItem("isAuthenticated");
-        setIsAuthenticated(user !== null && authFlag === "true");
-      }
+    const handleStorageChange = () => {
+      const user = localStorage.getItem("currentUser");
+      const authFlag = localStorage.getItem("isAuthenticated");
+      setIsAuthenticated(user !== null && authFlag === "true");
     };
 
+    // Listen for storage changes in other tabs
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
@@ -59,41 +46,11 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/habit-tracker" replace />
-            ) : (
-              <LoginPage 
-                darkMode={darkMode} 
-                setDarkMode={setDarkMode} 
-                onLogin={handleLogin}
-              />
-            )
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/habit-tracker" replace />
-            ) : (
-              <LoginPage 
-                darkMode={darkMode} 
-                setDarkMode={setDarkMode}
-                onLogin={handleLogin}
-              />
-            )
-          }
+          element={<LoginPage darkMode={darkMode} setDarkMode={setDarkMode} />}
         />
         <Route
           path="/signup"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/habit-tracker" replace />
-            ) : (
-              <SignUpPage darkMode={darkMode} setDarkMode={setDarkMode} />
-            )
-          }
+          element={<SignUpPage darkMode={darkMode} setDarkMode={setDarkMode} />}
         />
         <Route
           path="/habit-tracker"
@@ -101,16 +58,13 @@ function App() {
             isAuthenticated ? (
               <HabitTracker 
                 darkMode={darkMode} 
-                setDarkMode={setDarkMode}
-                onLogout={handleLogout}
+                setDarkMode={setDarkMode} 
               />
             ) : (
-              <Navigate to="/login" replace />
+              <Navigate to="/" replace />
             )
           }
         />
-        {/* Catch-all redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
